@@ -18,20 +18,60 @@ Klasická Mario hra vytvořená pomocí teček/bodů jako custom karta pro Home 
 
 [![Open your Home Assistant instance and open a repository inside the Home Assistant Community Store.](https://my.home-assistant.io/badges/hacs_repository.svg)](https://my.home-assistant.io/redirect/hacs_repository/?owner=joshuaaaaa&repository=mario&category=integration)
 
-1. Ujistěte se, že máte nainstalovaný [HACS](https://hacs.xyz/)
-2. V HACS jděte do **Integrations**
-3. Klikněte na tři tečky v pravém horním rohu
-4. Vyberte **Custom repositories**
-5. Přidejte URL repozitáře: `https://github.com/joshuaaaaa/mario`
-6. Kategorie: **Integration**
-7. Klikněte **Add**
-8. Najděte **Mario Game** v HACS a klikněte **Download**
-9. Přidejte do `configuration.yaml`:
-```yaml
-mario_game:
-```
-10. Restartujte Home Assistant
-11. Přidejte kartu do dashboardu (viz níže)
+#### Krok za krokem:
+
+1. **Ujistěte se, že máte nainstalovaný [HACS](https://hacs.xyz/)**
+
+2. **Přidejte custom repository:**
+   - Otevřete HACS v Home Assistant
+   - Klikněte na **Integrations**
+   - Klikněte na **⋮** (tři tečky) v pravém horním rohu
+   - Vyberte **Custom repositories**
+   - Přidejte:
+     - **Repository**: `https://github.com/joshuaaaaa/mario`
+     - **Category**: `Integration`
+   - Klikněte **ADD**
+
+3. **Stáhněte integraci:**
+   - V HACS vyhledejte **"Mario Game"**
+   - Klikněte na integraci
+   - Klikněte **DOWNLOAD**
+   - Klikněte **DOWNLOAD** znovu pro potvrzení
+
+4. **Přidejte do configuration.yaml:**
+   ```yaml
+   mario_game:
+   ```
+
+5. **Restartujte Home Assistant:**
+   - Nastavení → System → Restart
+
+6. **Ověřte instalaci:**
+   - V logu (Nastavení → System → Logs) hledejte:
+     ```
+     Mario Game integration loaded
+     Mario Game card registered at /mario_game/mario-game-card.js
+     ```
+
+7. **Otestujte přístup k JS souboru:**
+   - V prohlížeči otevřete: `http://VASE-HA-ADRESA:8123/mario_game/mario-game-card.js`
+   - ✅ Měli byste vidět JavaScript kód (ne 404!)
+
+8. **Přidejte Lovelace resource:**
+   - **⚠️ KRITICKÝ KROK!**
+   - Nastavení → Dashboardy → ⋮ → Zdroje → + Přidat zdroj
+   - **URL**: `/mario_game/mario-game-card.js`
+   - **Typ**: `JavaScript Module`
+   - Klikněte VYTVOŘIT
+
+9. **Vyčistěte cache prohlížeče:**
+   - Stiskněte **Ctrl+Shift+R** (nebo Cmd+Shift+R na Mac)
+
+10. **Přidejte kartu na dashboard:**
+    - Dashboard → Upravit → + Přidat kartu
+    - Scrollujte dolů do sekce **Custom**
+    - Najděte **Mario Game Card**
+    - NEBO přidejte manuálně: `type: custom:mario-game-card`
 
 ### Metoda 2: Manuální instalace
 
