@@ -1,3 +1,5 @@
+console.info('%c🎮 MARIO-GAME-CARD %cLoading...', 'color: red; font-weight: bold', 'color: green');
+
 class MarioGameCard extends HTMLElement {
   constructor() {
     super();
@@ -507,6 +509,7 @@ class MarioGameCard extends HTMLElement {
 }
 
 customElements.define('mario-game-card', MarioGameCard);
+console.info('%c🎮 MARIO-GAME-CARD %cCustom element registered!', 'color: red; font-weight: bold', 'color: green');
 
 // Register the card with Home Assistant
 window.customCards = window.customCards || [];
@@ -515,3 +518,4 @@ window.customCards.push({
   name: 'Mario Game Card',
   description: 'Klasická Mario hra vytvořená z teček - ovládání pomocí ASDW a mezerník'
 });
+console.info('%c🎮 MARIO-GAME-CARD %cRegistered in window.customCards', 'color: red; font-weight: bold', 'color: green');
