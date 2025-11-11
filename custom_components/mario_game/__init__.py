@@ -4,6 +4,7 @@ from __future__ import annotations
 import logging
 from homeassistant.core import HomeAssistant
 from homeassistant.helpers.typing import ConfigType
+from homeassistant.components.http import StaticPathConfig
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -15,10 +16,12 @@ async def async_setup(hass: HomeAssistant, config: ConfigType) -> bool:
     _LOGGER.info("Mario Game integration loaded")
 
     # Register the frontend resources
-    await hass.http.async_register_static_paths(
-        "/local/mario-game-card.js",
-        hass.config.path("www/mario-game-card.js"),
-        True,
-    )
+    await hass.http.async_register_static_paths([
+        StaticPathConfig(
+            "/local/mario-game-card.js",
+            hass.config.path("www/mario-game-card.js"),
+            True,
+        )
+    ])
 
     return True
