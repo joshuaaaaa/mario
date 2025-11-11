@@ -14,7 +14,28 @@ Klasická Mario hra vytvořená pomocí teček/bodů jako custom karta pro Home 
 
 ## 📦 Instalace
 
-### 1. Zkopírujte soubory
+### Metoda 1: HACS (Doporučeno) 🌟
+
+[![Open your Home Assistant instance and open a repository inside the Home Assistant Community Store.](https://my.home-assistant.io/badges/hacs_repository.svg)](https://my.home-assistant.io/redirect/hacs_repository/?owner=joshuaaaaa&repository=mario&category=integration)
+
+1. Ujistěte se, že máte nainstalovaný [HACS](https://hacs.xyz/)
+2. V HACS jděte do **Integrations**
+3. Klikněte na tři tečky v pravém horním rohu
+4. Vyberte **Custom repositories**
+5. Přidejte URL repozitáře: `https://github.com/joshuaaaaa/mario`
+6. Kategorie: **Integration**
+7. Klikněte **Add**
+8. Najděte **Mario Game** v HACS a klikněte **Download**
+9. Přidejte do `configuration.yaml`:
+```yaml
+mario_game:
+```
+10. Restartujte Home Assistant
+11. Přidejte kartu do dashboardu (viz níže)
+
+### Metoda 2: Manuální instalace
+
+#### 1. Zkopírujte soubory
 
 Zkopírujte obsah tohoto repozitáře do vaší Home Assistant instalace:
 
@@ -30,7 +51,7 @@ www/
 └── mario-game-card.js
 ```
 
-### 2. Přidejte do configuration.yaml
+#### 2. Přidejte do configuration.yaml
 
 Přidejte následující řádek do vašeho `configuration.yaml`:
 
@@ -38,7 +59,7 @@ Přidejte následující řádek do vašeho `configuration.yaml`:
 mario_game:
 ```
 
-### 3. Registrujte Lovelace kartu
+#### 3. Registrujte Lovelace kartu (pouze pro manuální instalaci)
 
 V Home Assistant UI:
 
@@ -48,11 +69,11 @@ V Home Assistant UI:
 4. Typ zdroje: **JavaScript modul**
 5. Klikněte na **Aktualizovat**
 
-### 4. Restartujte Home Assistant
+#### 4. Restartujte Home Assistant
 
 Restartujte Home Assistant aby se načetla custom komponenta.
 
-### 5. Přidejte kartu do dashboardu
+### Přidání karty do dashboardu
 
 1. Jděte na váš dashboard
 2. Klikněte na **Upravit dashboard**
