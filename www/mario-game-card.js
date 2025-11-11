@@ -18,8 +18,15 @@ class MarioGameCard extends HTMLElement {
   }
 
   setConfig(config) {
+    if (!config) {
+      throw new Error('Invalid configuration');
+    }
     this.config = config;
     this.render();
+  }
+
+  static getStubConfig() {
+    return {};
   }
 
   getCardSize() {
