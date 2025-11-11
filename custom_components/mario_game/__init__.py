@@ -15,7 +15,7 @@ async def async_setup(hass: HomeAssistant, config: ConfigType) -> bool:
     _LOGGER.info("Mario Game integration loaded")
 
     # Register the frontend resources
-    hass.http.register_static_path(
+    await hass.http.async_register_static_paths(
         "/local/mario-game-card.js",
         hass.config.path("www/mario-game-card.js"),
         True,
