@@ -17,25 +17,13 @@ Klasická Mario hra vytvořená pomocí teček jako custom karta pro Home Assist
 - **D** - Pohyb doprava
 - **MEZERNÍK** - Skok
 
-## ⚙️ Konfigurace po instalaci
+## ⚙️ Použití
 
-### ⚠️ DŮLEŽITÉ: Po stažení přes HACS musíte:
+### Po instalaci přes HACS:
 
-1. **Přidat do configuration.yaml:**
-   ```yaml
-   mario_game:
-   ```
+1. **Vyčistit cache**: Ctrl+Shift+R
 
-2. **Restartovat Home Assistant**
-
-3. **Přidat Lovelace Resource** (KRITICKÝ KROK!):
-   - Nastavení → Dashboardy → ⋮ → Zdroje → + Přidat zdroj
-   - **URL**: `/mario_game/mario-game-card.js`
-   - **Typ**: `JavaScript Module`
-
-4. **Vyčistit cache**: Ctrl+Shift+R
-
-5. **Přidat kartu**:
+2. **Přidat kartu na dashboard**:
    ```yaml
    type: custom:mario-game-card
    ```
@@ -43,13 +31,13 @@ Klasická Mario hra vytvořená pomocí teček jako custom karta pro Home Assist
 ## 🔍 Troubleshooting
 
 **"Custom element not found: mario-game-card":**
-- Nezapomněli jste přidat Lovelace Resource? (krok 3)
 - Vyčistili jste cache? (Ctrl+Shift+R)
-- Zkontrolujte, že URL `/mario_game/mario-game-card.js` je dostupná v prohlížeči
+- Zkontrolujte, že soubor je v `config/www/mario-game-card.js`
+- Pokud jste instalovali manuálně, zkontrolujte `configuration.yaml` resources
 
-**404 chyba na `/mario_game/mario-game-card.js`:**
+**Soubor se nenačítá:**
 - Restartujte Home Assistant
-- Zkontrolujte log, že integrace se načetla
+- Zkontrolujte, že URL `/local/mario-game-card.js` je dostupná v prohlížeči
 
 ## 🎯 Herní mechaniky
 

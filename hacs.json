@@ -1,9 +1,7 @@
 {
-  "name": "Mario Game",
-  "content_in_root": false,
-  "filename": "mario_game",
+  "name": "Mario Game Card",
+  "filename": "mario-game-card.js",
+  "content_in_root": true,
   "render_readme": true,
-  "domains": ["mario_game"],
-  "homeassistant": "2023.1.0",
-  "iot_class": "Calculated"
+  "country": "CZ"
 }
