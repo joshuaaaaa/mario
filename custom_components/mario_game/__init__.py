@@ -18,10 +18,15 @@ async def async_setup(hass: HomeAssistant, config: ConfigType) -> bool:
     _LOGGER.info("Mario Game integration loaded")
 
     # Get the path to the card JS file (in the same directory as this component)
-    integration_dir = Path(__file__).parent.parent.parent
-    card_path = integration_dir / "www" / "mario-game-card.js"
+    integration_dir = Path(__file__).parent
+    card_path = integration_dir / "mario-game-card.js"
 
     _LOGGER.info(f"Registering Mario Game card from: {card_path}")
+
+    # Check if file exists
+    if not card_path.exists():
+        _LOGGER.error(f"Card file not found at: {card_path}")
+        return False
 
     # Register the frontend resources with a unique path
     await hass.http.async_register_static_paths([
