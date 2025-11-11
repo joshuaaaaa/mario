@@ -59,13 +59,15 @@ Přidejte následující řádek do vašeho `configuration.yaml`:
 mario_game:
 ```
 
-#### 3. Registrujte Lovelace kartu (pouze pro manuální instalaci)
+#### 3. Registrujte Lovelace kartu
+
+Po restartování Home Assistant zkontrolujte log - měli byste vidět zprávu s URL karty.
 
 V Home Assistant UI:
 
 1. Jděte do **Nastavení** → **Dashboardy** → **Zdroje**
 2. Klikněte na **Přidat zdroj**
-3. URL: `/local/mario-game-card.js`
+3. URL: `/mario_game/mario-game-card.js`
 4. Typ zdroje: **JavaScript modul**
 5. Klikněte na **Aktualizovat**
 
