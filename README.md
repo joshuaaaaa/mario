@@ -40,14 +40,11 @@ mario_game:
 Zkopírujte obsah tohoto repozitáře do vaší Home Assistant instalace:
 
 ```bash
-# Custom komponenta
+# Custom komponenta (vše v jednom adresáři)
 custom_components/mario_game/
 ├── __init__.py
 ├── manifest.json
-└── const.py
-
-# Lovelace karta
-www/
+├── const.py
 └── mario-game-card.js
 ```
 
@@ -116,11 +113,10 @@ Hra je vytvořena pomocí:
 mario/
 ├── custom_components/
 │   └── mario_game/
-│       ├── __init__.py          # Inicializace komponenty
+│       ├── __init__.py           # Inicializace komponenty
 │       ├── manifest.json         # Metadata komponenty
-│       └── const.py              # Konstanty
-├── www/
-│   └── mario-game-card.js       # Lovelace karta s herní logikou
+│       ├── const.py              # Konstanty
+│       └── mario-game-card.js   # Lovelace karta s herní logikou
 └── README.md                     # Tento soubor
 ```
 

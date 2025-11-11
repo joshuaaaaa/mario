@@ -18,19 +18,37 @@ class MarioGameCard extends HTMLElement {
   }
 
   setConfig(config) {
-    if (!config) {
-      throw new Error('Invalid configuration');
+    // Accept any config, including empty object
+    this.config = config || {};
+    // Only render if we have a shadow root
+    if (this.shadowRoot) {
+      this.render();
     }
-    this.config = config;
-    this.render();
   }
 
   static getStubConfig() {
     return {};
   }
 
+  static getConfigElement() {
+    // Return undefined to indicate no visual editor
+    return undefined;
+  }
+
   getCardSize() {
     return 6;
+  }
+
+  set hass(hass) {
+    // Store hass object when Home Assistant provides it
+    this._hass = hass;
+  }
+
+  connectedCallback() {
+    // Render when element is connected to DOM, if we have config
+    if (this.config && this.shadowRoot) {
+      this.render();
+    }
   }
 
   render() {
