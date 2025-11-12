@@ -8,9 +8,13 @@ Klasická Mario hra vytvořená pomocí teček/bodů jako custom karta pro Home 
 - 🎯 Platformy a překážky
 - 👾 Nepřátelé (Goomba)
 - 🪙 Sbíratelné mince
-- 🏆 Systém skóre
-- ⌨️ Ovládání klávesnicí: **A/D** pro pohyb, **MEZERNÍK** pro skok
+- 🏆 Systém skóre a více levelů
+- ⌨️ Ovládání klávesnicí: **K/L** pro pohyb, **MEZERNÍK/W** pro skok
 - 🎨 Vizuály z malých bodů/teček
+- 🍄 Power-upy (houby, květiny)
+- 🔊 Zvukové efekty
+- 👾 Více typů nepřátel (Goomba, Koopa, Piranha Plant)
+- 📱 Mobilní ovládání (dotykové)
 
 ## 📦 Instalace
 
@@ -101,16 +105,27 @@ type: custom:mario-game-card
 
 ## 🎮 Ovládání
 
-- **A** - Pohyb doleva
-- **D** - Pohyb doprava
-- **MEZERNÍK** - Skok
+**PC:**
+- **K** - Pohyb doleva
+- **L** - Pohyb doprava
+- **MEZERNÍK** nebo **W** - Skok
+- **X** nebo **SHIFT** - Střelba (s flower power-upem)
+
+**Mobil:**
+- Použijte dotykové tlačítka pod hrou
+- Nebo swipněte nahoru na canvasu pro skok
 
 ## 🎯 Herní mechaniky
 
 - Skákejte na platformy a vyhýbejte se nepřátelům
 - Sbírejte mince pro body (50 bodů za minci)
 - Skákejte na nepřátele pro jejich eliminaci (100 bodů)
-- Nespadněte ze spodní části obrazovky!
+- Sesbírejte power-upy:
+  - 🍄 **Houba** - zvětší Mária a dá extra hit point (200 bodů)
+  - 🌺 **Květina** - umožní střílet ohnivé koule (300 bodů)
+- Projděte levely sesbíráním všech mincí a poražením všech nepřátel
+- 3 životy - nespadněte ze spodní části obrazovky!
+- Level bonus: 500 bodů za každý život při dokončení levelu
 
 ## 🛠️ Technické detaily
 
@@ -142,14 +157,24 @@ Veškerá grafika je vytvořena z malých teček (pixelů):
 - Mince: Zlaté kruhové
 - Mraky: Bílé průhledné
 
+## ✅ Nové funkce (v1.1)
+
+- ✅ Více levelů s postupnou obtížností
+- ✅ Power-upy (houby pro zvětšení, květiny pro střelbu)
+- ✅ Zvukové efekty (skok, mince, power-up, stomp, atd.)
+- ✅ 3 typy nepřátel (Goomba, Koopa Troopa, Piranha Plant)
+- ✅ Animace (mince, nepřátelé, částice)
+- ✅ Mobilní ovládání (dotykové tlačítka + swipe)
+- ✅ Systém životů a invincibility po zásahu
+- ✅ Level progression s bonusy
+
 ## 🚀 Budoucí vylepšení
 
-- [ ] Více levelů
-- [ ] Power-upy (houby, květiny)
-- [ ] Zvukové efekty
-- [ ] Více typů nepřátel
-- [ ] Lepší animace
-- [ ] Mobilní ovládání (dotykové)
+- [ ] Více typů power-upů (hvězda, 1-UP houba)
+- [ ] Skryté bloky a power-up boxy
+- [ ] Boss fights na konci levelů
+- [ ] Hudba na pozadí
+- [ ] High score tabulka
 
 ## 📄 Licence
 
