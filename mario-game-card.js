@@ -305,13 +305,18 @@ class MarioGameCard extends HTMLElement {
     this.gameState.keys = { left: false, right: false, jump: false, shoot: false };
     this.gameState.camera = { x: 0 };
     this.gameState.levelWidth = 3200;
+    this.gameState.inBonusRoom = false;
+    this.gameState.savedPosition = null;
     this.gameState.platforms = this.generateLevel(this.gameState.level);
     this.gameState.enemies = this.generateEnemies(this.gameState.level);
     this.gameState.coins = this.generateCoins(this.gameState.level);
     this.gameState.powerUps = this.generatePowerUps(this.gameState.level);
+    this.gameState.pipes = this.generatePipes(this.gameState.level);
     this.gameState.flag = { x: this.gameState.levelWidth - 100, y: 280, height: 100 };
     this.gameState.projectiles = [];
     this.gameState.particles = [];
+    this.gameState.bonusPlatforms = [];
+    this.gameState.bonusCoins = [];
     this.gameState.gameOver = false;
     this.gameState.levelComplete = false;
     this.gameState.coinsCollected = 0;
@@ -324,71 +329,176 @@ class MarioGameCard extends HTMLElement {
   generateLevel(level) {
     const platforms = [];
     const levelWidth = 3200;
+    const blockSize = 20; // Size of individual brick blocks
 
     // Ground (not breakable)
     platforms.push({ x: 0, y: 380, width: levelWidth, height: 20, breakable: false, broken: false });
 
-    // Generate platforms going right
+    // Generate platforms with individual bricks
     for (let x = 200; x < levelWidth - 200; x += 180) {
       const height = 340 - Math.random() * 100;
-      const width = 80 + Math.random() * 70;
+      const numBlocks = Math.floor(Math.random() * 5) + 3; // 3-7 blocks
 
-      // Add platform (breakable)
-      platforms.push({
-        x: x,
-        y: height,
-        width: width,
-        height: 15,
-        breakable: true,
-        broken: false
-      });
-
-      // Sometimes add a higher platform nearby
-      if (Math.random() > 0.5 && x < levelWidth - 400) {
+      // Create individual breakable blocks
+      for (let i = 0; i < numBlocks; i++) {
         platforms.push({
-          x: x + 150,
-          y: height - 80,
-          width: 60,
+          x: x + i * blockSize,
+          y: height,
+          width: blockSize,
           height: 15,
           breakable: true,
-          broken: false
+          broken: false,
+          isBrick: true
+        });
+      }
+
+      // Sometimes add a higher platform nearby with individual blocks
+      if (Math.random() > 0.5 && x < levelWidth - 400) {
+        const numHighBlocks = Math.floor(Math.random() * 3) + 2; // 2-4 blocks
+        for (let i = 0; i < numHighBlocks; i++) {
+          platforms.push({
+            x: x + 150 + i * blockSize,
+            y: height - 80,
+            width: blockSize,
+            height: 15,
+            breakable: true,
+            broken: false,
+            isBrick: true
+          });
+        }
+      }
+    }
+
+    // Add some gap platforms with individual blocks
+    for (let x = 800; x < levelWidth - 300; x += 400) {
+      const numBlocks = Math.floor(Math.random() * 4) + 3; // 3-6 blocks
+      for (let i = 0; i < numBlocks; i++) {
+        platforms.push({
+          x: x + i * blockSize,
+          y: 280,
+          width: blockSize,
+          height: 15,
+          breakable: true,
+          broken: false,
+          isBrick: true
         });
       }
     }
 
-    // Add some gaps platforms for jumping
-    for (let x = 800; x < levelWidth - 300; x += 400) {
-      platforms.push({
-        x: x,
-        y: 280,
-        width: 100,
-        height: 15,
-        breakable: true,
-        broken: false
-      });
+    return platforms;
+  }
+
+  generatePipes(level) {
+    const pipes = [];
+    const levelWidth = this.gameState.levelWidth;
+    const groundY = 380;
+
+    // Add 2-3 pipes with tunnels in the level
+    const numPipes = Math.floor(Math.random() * 2) + 2; // 2-3 pipes
+
+    for (let i = 0; i < numPipes; i++) {
+      const x = 600 + i * 1000 + Math.random() * 200;
+
+      if (x < levelWidth - 300) {
+        pipes.push({
+          x: x,
+          y: groundY - 60, // Pipe sticks out 60px from ground
+          width: 40,
+          height: 60,
+          isTunnel: true,
+          isEntry: true // Entry pipe (goes down)
+        });
+      }
     }
 
-    return platforms;
+    return pipes;
+  }
+
+  enterBonusRoom() {
+    // Save current position
+    this.gameState.savedPosition = {
+      x: this.gameState.player.x,
+      y: this.gameState.player.y,
+      cameraX: this.gameState.camera.x
+    };
+
+    // Enter bonus room
+    this.gameState.inBonusRoom = true;
+    this.gameState.player.x = 100;
+    this.gameState.player.y = 300;
+    this.gameState.camera.x = 0;
+
+    // Generate bonus room
+    this.gameState.bonusPlatforms = [
+      // Floor
+      { x: 0, y: 380, width: 800, height: 20, breakable: false, broken: false },
+      // Platforms with coins
+      { x: 150, y: 300, width: 100, height: 15, breakable: false, broken: false },
+      { x: 350, y: 250, width: 100, height: 15, breakable: false, broken: false },
+      { x: 550, y: 200, width: 100, height: 15, breakable: false, broken: false }
+    ];
+
+    // Generate bonus coins
+    this.gameState.bonusCoins = [];
+    for (let x = 100; x < 700; x += 60) {
+      for (let y = 100; y < 350; y += 60) {
+        this.gameState.bonusCoins.push({
+          x: x,
+          y: y,
+          collected: false,
+          animFrame: 0
+        });
+      }
+    }
+
+    // Exit pipe on right side
+    this.gameState.bonusExitPipe = {
+      x: 720,
+      y: 320,
+      width: 40,
+      height: 60,
+      isTunnel: true,
+      isExit: true
+    };
+  }
+
+  exitBonusRoom() {
+    this.gameState.inBonusRoom = false;
+
+    // Restore position
+    if (this.gameState.savedPosition) {
+      this.gameState.player.x = this.gameState.savedPosition.x + 50; // Slightly right of pipe
+      this.gameState.player.y = this.gameState.savedPosition.y;
+      this.gameState.camera.x = this.gameState.savedPosition.cameraX;
+    }
+
+    // Clear bonus room data
+    this.gameState.bonusPlatforms = [];
+    this.gameState.bonusCoins = [];
+    this.gameState.bonusExitPipe = null;
   }
 
   generateEnemies(level) {
     const enemies = [];
     const types = ['goomba', 'koopa', 'piranha'];
     const levelWidth = this.gameState.levelWidth;
+    const groundY = 380; // Ground platform y position
 
     // Spread enemies across the level
     for (let x = 300; x < levelWidth - 200; x += 250) {
       const type = types[Math.floor(Math.random() * Math.min(level, 3))];
+      const enemyHeight = type === 'piranha' ? 24 : 16;
+
       enemies.push({
         x: x + Math.random() * 100,
-        y: type === 'piranha' ? 320 : 340,
+        y: groundY - enemyHeight, // Place directly on ground
         width: 16,
-        height: type === 'piranha' ? 24 : 16,
+        height: enemyHeight,
         velocityX: 0.8 + level * 0.1,
         direction: Math.random() > 0.5 ? 1 : -1,
         type: type,
         animFrame: 0,
-        pipeY: 360
+        pipeY: groundY - 20 // Pipe top position
       });
     }
 
@@ -536,9 +646,11 @@ class MarioGameCard extends HTMLElement {
     // Boundary checks (left side)
     if (player.x < 0) player.x = 0;
 
-    // Platform collision
+    // Platform collision (use bonus platforms if in bonus room)
     player.onGround = false;
-    for (const platform of this.gameState.platforms) {
+    const platformsToCheck = this.gameState.inBonusRoom ? this.gameState.bonusPlatforms : this.gameState.platforms;
+
+    for (const platform of platformsToCheck) {
       if (platform.broken) continue; // Skip broken platforms
 
       if (this.checkCollision(player, platform)) {
@@ -570,10 +682,33 @@ class MarioGameCard extends HTMLElement {
     const targetCameraX = player.x - this.canvas.width / 3;
     this.gameState.camera.x += (targetCameraX - this.gameState.camera.x) * 0.1;
 
-    // Camera bounds
-    if (this.gameState.camera.x < 0) this.gameState.camera.x = 0;
-    if (this.gameState.camera.x > this.gameState.levelWidth - this.canvas.width) {
-      this.gameState.camera.x = this.gameState.levelWidth - this.canvas.width;
+    // Camera bounds (don't move camera in bonus room)
+    if (!this.gameState.inBonusRoom) {
+      if (this.gameState.camera.x < 0) this.gameState.camera.x = 0;
+      if (this.gameState.camera.x > this.gameState.levelWidth - this.canvas.width) {
+        this.gameState.camera.x = this.gameState.levelWidth - this.canvas.width;
+      }
+    }
+
+    // Check pipe collision for tunnels
+    if (!this.gameState.inBonusRoom) {
+      // Check entry pipes
+      for (const pipe of this.gameState.pipes) {
+        if (pipe.isTunnel && pipe.isEntry) {
+          // Player must be standing on pipe and press down (S key)
+          if (this.checkCollision(player, pipe) && player.onGround && this.gameState.keys.jump) {
+            this.enterBonusRoom();
+            break;
+          }
+        }
+      }
+    } else {
+      // Check exit pipe in bonus room
+      if (this.gameState.bonusExitPipe) {
+        if (this.checkCollision(player, this.gameState.bonusExitPipe) && player.onGround && this.gameState.keys.jump) {
+          this.exitBonusRoom();
+        }
+      }
     }
 
     // Decrease invincibility
@@ -650,8 +785,10 @@ class MarioGameCard extends HTMLElement {
       }
     }
 
-    // Check coin collection
-    for (const coin of this.gameState.coins) {
+    // Check coin collection (use bonus coins if in bonus room)
+    const coinsToCheck = this.gameState.inBonusRoom ? this.gameState.bonusCoins : this.gameState.coins;
+
+    for (const coin of coinsToCheck) {
       if (!coin.collected) {
         coin.animFrame = (coin.animFrame + 0.1) % (Math.PI * 2);
         if (this.checkCollision(player, { x: coin.x - 8, y: coin.y - 8, width: 16, height: 16 })) {
@@ -819,64 +956,97 @@ class MarioGameCard extends HTMLElement {
   draw() {
     const camera = this.gameState.camera;
 
-    // Clear canvas
-    this.ctx.fillStyle = '#87CEEB';
+    // Clear canvas with different color for bonus room
+    this.ctx.fillStyle = this.gameState.inBonusRoom ? '#1a1a2e' : '#87CEEB';
     this.ctx.fillRect(0, 0, this.canvas.width, this.canvas.height);
 
-    // Draw clouds (parallax effect)
-    this.drawCloud(100 - camera.x * 0.3, 50);
-    this.drawCloud(400 - camera.x * 0.3, 80);
-    this.drawCloud(700 - camera.x * 0.3, 40);
-    this.drawCloud(1000 - camera.x * 0.3, 60);
-    this.drawCloud(1400 - camera.x * 0.3, 90);
+    // Draw clouds (parallax effect) - not in bonus room
+    if (!this.gameState.inBonusRoom) {
+      this.drawCloud(100 - camera.x * 0.3, 50);
+      this.drawCloud(400 - camera.x * 0.3, 80);
+      this.drawCloud(700 - camera.x * 0.3, 40);
+      this.drawCloud(1000 - camera.x * 0.3, 60);
+      this.drawCloud(1400 - camera.x * 0.3, 90);
+    }
 
     // Save context and apply camera offset
     this.ctx.save();
     this.ctx.translate(-camera.x, 0);
 
-    // Draw platforms (skip broken ones)
-    for (const platform of this.gameState.platforms) {
-      if (!platform.broken) {
+    if (this.gameState.inBonusRoom) {
+      // Draw bonus room
+      // Draw bonus platforms
+      for (const platform of this.gameState.bonusPlatforms) {
         this.drawPlatform(platform);
       }
-    }
 
-    // Draw flag
-    this.drawFlag(this.gameState.flag);
+      // Draw bonus coins
+      for (const coin of this.gameState.bonusCoins) {
+        if (!coin.collected) {
+          this.drawCoin(coin.x, coin.y, coin.animFrame);
+        }
+      }
 
-    // Draw power-ups
-    for (const powerUp of this.gameState.powerUps) {
-      if (!powerUp.collected) {
-        this.drawPowerUp(powerUp);
+      // Draw exit pipe
+      if (this.gameState.bonusExitPipe) {
+        this.drawPipe(this.gameState.bonusExitPipe);
+      }
+
+      // Draw "BONUS ROOM!" text
+      this.ctx.fillStyle = '#FFD700';
+      this.ctx.font = 'bold 24px monospace';
+      this.ctx.fillText('BONUS ROOM!', 300, 50);
+    } else {
+      // Draw normal level
+      // Draw platforms (skip broken ones)
+      for (const platform of this.gameState.platforms) {
+        if (!platform.broken) {
+          this.drawPlatform(platform);
+        }
+      }
+
+      // Draw pipes
+      for (const pipe of this.gameState.pipes) {
+        this.drawPipe(pipe);
+      }
+
+      // Draw flag
+      this.drawFlag(this.gameState.flag);
+
+      // Draw power-ups
+      for (const powerUp of this.gameState.powerUps) {
+        if (!powerUp.collected) {
+          this.drawPowerUp(powerUp);
+        }
+      }
+
+      // Draw coins
+      for (const coin of this.gameState.coins) {
+        if (!coin.collected) {
+          this.drawCoin(coin.x, coin.y, coin.animFrame);
+        }
+      }
+
+      // Draw enemies
+      for (const enemy of this.gameState.enemies) {
+        if (enemy.x > -50) {
+          this.drawEnemy(enemy);
+        }
+      }
+
+      // Draw projectiles
+      for (const proj of this.gameState.projectiles) {
+        this.drawProjectile(proj);
       }
     }
 
-    // Draw coins
-    for (const coin of this.gameState.coins) {
-      if (!coin.collected) {
-        this.drawCoin(coin.x, coin.y, coin.animFrame);
-      }
-    }
-
-    // Draw enemies
-    for (const enemy of this.gameState.enemies) {
-      if (enemy.x > -50) {
-        this.drawEnemy(enemy);
-      }
-    }
-
-    // Draw projectiles
-    for (const proj of this.gameState.projectiles) {
-      this.drawProjectile(proj);
-    }
-
-    // Draw particles
+    // Draw particles (both modes)
     for (const p of this.gameState.particles) {
       this.ctx.fillStyle = p.color;
       this.ctx.fillRect(p.x, p.y, 3, 3);
     }
 
-    // Draw player
+    // Draw player (both modes)
     if (this.gameState.player.invincible === 0 || this.gameState.animCounter % 4 < 2) {
       this.drawPlayer(this.gameState.player);
     }
@@ -893,6 +1063,55 @@ class MarioGameCard extends HTMLElement {
       for (let j = 0; j < 3; j++) {
         this.ctx.beginPath();
         this.ctx.arc(x + i * spacing, y + j * spacing, dotSize, 0, Math.PI * 2);
+        this.ctx.fill();
+      }
+    }
+  }
+
+  drawPipe(pipe) {
+    const dotSize = 3;
+    const spacing = 5;
+
+    // Draw green pipe body
+    this.ctx.fillStyle = '#228B22';
+    for (let x = pipe.x; x < pipe.x + pipe.width; x += spacing) {
+      for (let y = pipe.y; y < pipe.y + pipe.height; y += spacing) {
+        this.ctx.beginPath();
+        this.ctx.arc(x + dotSize, y + dotSize, dotSize, 0, Math.PI * 2);
+        this.ctx.fill();
+      }
+    }
+
+    // Draw pipe rim (darker green)
+    this.ctx.fillStyle = '#1a6b1a';
+    for (let x = pipe.x - 5; x < pipe.x + pipe.width + 5; x += spacing) {
+      for (let y = pipe.y; y < pipe.y + 8; y += spacing) {
+        this.ctx.beginPath();
+        this.ctx.arc(x + dotSize, y + dotSize, dotSize, 0, Math.PI * 2);
+        this.ctx.fill();
+      }
+    }
+
+    // Draw tunnel indicator if it's a tunnel (arrow pointing down/up)
+    if (pipe.isTunnel) {
+      this.ctx.fillStyle = pipe.isEntry ? '#FFD700' : '#FF4500';
+      const arrowX = pipe.x + pipe.width / 2;
+      const arrowY = pipe.y + pipe.height / 2;
+
+      // Draw arrow dots
+      for (let i = -2; i <= 2; i++) {
+        this.ctx.beginPath();
+        this.ctx.arc(arrowX + i * 3, arrowY, 2, 0, Math.PI * 2);
+        this.ctx.fill();
+      }
+      // Arrow point
+      if (pipe.isEntry) {
+        this.ctx.beginPath();
+        this.ctx.arc(arrowX, arrowY + 6, 3, 0, Math.PI * 2);
+        this.ctx.fill();
+      } else {
+        this.ctx.beginPath();
+        this.ctx.arc(arrowX, arrowY - 6, 3, 0, Math.PI * 2);
         this.ctx.fill();
       }
     }
