@@ -117,15 +117,18 @@ type: custom:mario-game-card
 
 ## 🎯 Herní mechaniky
 
+- **Horizontální scrolling** - Mario běží doprava jako v klasické hře
+- Kamera sleduje Maria plynule
 - Skákejte na platformy a vyhýbejte se nepřátelům
-- Sbírejte mince pro body (50 bodů za minci)
-- Skákejte na nepřátele pro jejich eliminaci (100 bodů)
+- **Zlepšené ovládání ve vzduchu** - lepší kontrola při skákání
+- Sbírejte mince pro body (50 bodů za minci) - umístěné na dosažitelných místech
+- Skákejte na nepřátele pro jejich eliminaci (100 bodů) nebo je sestřelte
 - Sesbírejte power-upy:
   - 🍄 **Houba** - zvětší Mária a dá extra hit point (200 bodů)
   - 🌺 **Květina** - umožní střílet ohnivé koule (300 bodů)
-- Projděte levely sesbíráním všech mincí a poražením všech nepřátel
+- **Dosáhněte vlajky na konci levelu** pro dokončení! 🏁
 - 3 životy - nespadněte ze spodní části obrazovky!
-- Level bonus: 500 bodů za každý život při dokončení levelu
+- Level bonus: 500 bodů za každý život + 50 bodů za sbíranou minci
 
 ## 🛠️ Technické detaily
 
@@ -157,8 +160,14 @@ Veškerá grafika je vytvořena z malých teček (pixelů):
 - Mince: Zlaté kruhové
 - Mraky: Bílé průhledné
 
-## ✅ Nové funkce (v1.1)
+## ✅ Nové funkce (v1.2)
 
+- ✅ **Horizontální scrollování** - Mario běží doprava jako v klasické hře!
+- ✅ **Plynulá kamera** - sleduje Maria s parallax efektem mraku
+- ✅ **Zlepšené ovládání** - lepší kontrola ve vzduchu při skákání
+- ✅ **Vlajka na konci levelu** - dosáhněte vlajky pro dokončení (ne sbírání mincí)
+- ✅ **Delší levely** (3200px šířka) - můžete běžet doprava
+- ✅ Mince umístěné na dosažitelných místech (nad platformami)
 - ✅ Více levelů s postupnou obtížností
 - ✅ Power-upy (houby pro zvětšení, květiny pro střelbu)
 - ✅ Zvukové efekty (skok, mince, power-up, stomp, atd.)
@@ -166,7 +175,6 @@ Veškerá grafika je vytvořena z malých teček (pixelů):
 - ✅ Animace (mince, nepřátelé, částice)
 - ✅ Mobilní ovládání (dotykové tlačítka + swipe)
 - ✅ Systém životů a invincibility po zásahu
-- ✅ Level progression s bonusy
 
 ## 🚀 Budoucí vylepšení
 
