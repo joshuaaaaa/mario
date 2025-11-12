@@ -4,6 +4,8 @@
 
 A classic Mario platformer game created with dots/pixels as a custom card for Home Assistant.
 
+<img width="989" height="533" alt="image" src="https://github.com/user-attachments/assets/32edcfdd-82b3-44de-8343-666f3003f068" />
+
 ## ✨ Features
 
 - 🏃 Mario character made from colored dots
@@ -38,16 +40,10 @@ A classic Mario platformer game created with dots/pixels as a custom card for Ho
      - **Category**: `Lovelace`
    - Click **ADD**
 
-3. **Download the plugin:**
-   - In HACS Frontend, search for **"Mario Game Card"**
-   - Click on the plugin
-   - Click **DOWNLOAD**
-   - Click **DOWNLOAD** again to confirm
-
-4. **Clear browser cache:**
+3. **Clear browser cache:**
    - Press **Ctrl+Shift+R** (or Cmd+Shift+R on Mac)
 
-5. **Add card to dashboard:**
+4. **Add card to dashboard:**
    - Dashboard → Edit → + Add Card
    - Scroll down to the **Custom** section
    - Find **Mario Game Card**
