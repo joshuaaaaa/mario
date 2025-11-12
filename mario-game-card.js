@@ -13,7 +13,7 @@ class MarioGameCard extends HTMLElement {
         invincible: 0,
         animFrame: 0
       },
-      keys: { left: false, right: false, jump: false, shoot: false },
+      keys: { left: false, right: false, jump: false, shoot: false, down: false },
       camera: { x: 0 },
       platforms: [],
       enemies: [],
@@ -219,7 +219,7 @@ class MarioGameCard extends HTMLElement {
             </div>
           </div>
           <div class="controls">
-            ⌨️ PC: K/L = pohyb vlevo/vpravo | MEZERNÍK/W = skok | X/SHIFT = střelba<br>
+            ⌨️ PC: J = doleva | L = doprava | MEZERNÍK/W = skok | K = dolů (vstup do tunelu) | X/SHIFT = střelba<br>
             📱 Mobil: Použijte tlačítka níže
           </div>
           <div class="touch-controls">
@@ -302,7 +302,7 @@ class MarioGameCard extends HTMLElement {
       invincible: 0,
       animFrame: 0
     };
-    this.gameState.keys = { left: false, right: false, jump: false, shoot: false };
+    this.gameState.keys = { left: false, right: false, jump: false, shoot: false, down: false };
     this.gameState.camera = { x: 0 };
     this.gameState.levelWidth = 3200;
     this.gameState.inBonusRoom = false;
@@ -565,8 +565,12 @@ class MarioGameCard extends HTMLElement {
     document.addEventListener('keydown', (e) => {
       if (this.gameState.gameOver) return;
 
-      if (e.key === 'k' || e.key === 'K') {
+      if (e.key === 'j' || e.key === 'J') {
         this.gameState.keys.left = true;
+      }
+
+      if (e.key === 'k' || e.key === 'K') {
+        this.gameState.keys.down = true;
       }
 
       if (e.key === 'l' || e.key === 'L') {
@@ -584,8 +588,11 @@ class MarioGameCard extends HTMLElement {
     });
 
     document.addEventListener('keyup', (e) => {
-      if (e.key === 'k' || e.key === 'K') {
+      if (e.key === 'j' || e.key === 'J') {
         this.gameState.keys.left = false;
+      }
+      if (e.key === 'k' || e.key === 'K') {
+        this.gameState.keys.down = false;
       }
       if (e.key === 'l' || e.key === 'L') {
         this.gameState.keys.right = false;
@@ -695,8 +702,8 @@ class MarioGameCard extends HTMLElement {
       // Check entry pipes
       for (const pipe of this.gameState.pipes) {
         if (pipe.isTunnel && pipe.isEntry) {
-          // Player must be standing on pipe and press down (S key)
-          if (this.checkCollision(player, pipe) && player.onGround && this.gameState.keys.jump) {
+          // Player must be standing on pipe and press down (K key)
+          if (this.checkCollision(player, pipe) && player.onGround && this.gameState.keys.down) {
             this.enterBonusRoom();
             break;
           }
@@ -705,7 +712,7 @@ class MarioGameCard extends HTMLElement {
     } else {
       // Check exit pipe in bonus room
       if (this.gameState.bonusExitPipe) {
-        if (this.checkCollision(player, this.gameState.bonusExitPipe) && player.onGround && this.gameState.keys.jump) {
+        if (this.checkCollision(player, this.gameState.bonusExitPipe) && player.onGround && this.gameState.keys.down) {
           this.exitBonusRoom();
         }
       }
