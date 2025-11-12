@@ -5,17 +5,25 @@ Klasická Mario hra vytvořená pomocí teček jako custom karta pro Home Assist
 ## ✨ Funkce
 
 - 🏃 Mario postavička vytvořená z barevných teček
-- 🎯 Platformy a překážky
-- 👾 Nepřátelé (Goomba)
+- 🎯 Více levelů s postupnou obtížností
+- 👾 3 typy nepřátel (Goomba, Koopa, Piranha Plant)
 - 🪙 Sbíratelné mince
-- 🏆 Systém skóre
-- ⌨️ Ovládání klávesnicí: **A/D** pro pohyb, **MEZERNÍK** pro skok
+- 🍄 Power-upy (houby, květiny)
+- 🏆 Systém skóre a životů
+- 🔊 Zvukové efekty
+- ⌨️ Ovládání: **K/L** pohyb, **MEZERNÍK/W** skok, **X/SHIFT** střelba
+- 📱 Mobilní ovládání (dotykové)
 
 ## 🎮 Ovládání
 
-- **A** - Pohyb doleva
-- **D** - Pohyb doprava
-- **MEZERNÍK** - Skok
+**PC:**
+- **K** - Pohyb doleva
+- **L** - Pohyb doprava
+- **MEZERNÍK** nebo **W** - Skok
+- **X** nebo **SHIFT** - Střelba (s flower power-upem)
+
+**Mobil:**
+- Dotykové tlačítka pod hrou
 
 ## ⚙️ Použití
 
@@ -41,10 +49,12 @@ Klasická Mario hra vytvořená pomocí teček jako custom karta pro Home Assist
 
 ## 🎯 Herní mechaniky
 
-- Skákejte na platformy a vyhýbejte se nepřátelům
-- Sbírejte mince pro body (50 bodů za minci)
-- Skákejte na nepřátele pro jejich eliminaci (100 bodů)
-- Nespadněte ze spodní části obrazovky!
+- Sbírejte mince (50 bodů) a power-upy (200-300 bodů)
+- Porazte nepřátele skokem (100 bodů) nebo střelbou
+- 🍄 Houba = větší Mario + extra hit
+- 🌺 Květina = schopnost střílet ohnivé koule
+- 3 životy, dokončete level sesbíráním všech mincí a poražením nepřátel
+- Bonus 500 bodů za život při dokončení levelu
 
 ---
 
