@@ -1,9 +1,0 @@
-# Příklad konfigurace pro configuration.yaml
-
-# Aktivace Mario Game komponenty
-mario_game:
-
-# Příklad Lovelace karty
-# Přidejte tuto konfiguraci do vašeho dashboardu:
-#
-# - type: custom:mario-game-card
