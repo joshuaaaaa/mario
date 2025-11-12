@@ -325,20 +325,22 @@ class MarioGameCard extends HTMLElement {
     const platforms = [];
     const levelWidth = 3200;
 
-    // Ground
-    platforms.push({ x: 0, y: 380, width: levelWidth, height: 20 });
+    // Ground (not breakable)
+    platforms.push({ x: 0, y: 380, width: levelWidth, height: 20, breakable: false, broken: false });
 
     // Generate platforms going right
     for (let x = 200; x < levelWidth - 200; x += 180) {
       const height = 340 - Math.random() * 100;
       const width = 80 + Math.random() * 70;
 
-      // Add platform
+      // Add platform (breakable)
       platforms.push({
         x: x,
         y: height,
         width: width,
-        height: 15
+        height: 15,
+        breakable: true,
+        broken: false
       });
 
       // Sometimes add a higher platform nearby
@@ -347,7 +349,9 @@ class MarioGameCard extends HTMLElement {
           x: x + 150,
           y: height - 80,
           width: 60,
-          height: 15
+          height: 15,
+          breakable: true,
+          broken: false
         });
       }
     }
@@ -358,7 +362,9 @@ class MarioGameCard extends HTMLElement {
         x: x,
         y: 280,
         width: 100,
-        height: 15
+        height: 15,
+        breakable: true,
+        broken: false
       });
     }
 
@@ -392,30 +398,25 @@ class MarioGameCard extends HTMLElement {
   generateCoins(level) {
     const coins = [];
     const levelWidth = this.gameState.levelWidth;
-    const platforms = this.gameState.platforms;
 
-    // Place coins on or near platforms
-    for (const platform of platforms) {
-      if (platform.y < 350 && platform.width > 50) {
-        // Coins above the platform
-        const numCoins = Math.floor(platform.width / 40);
-        for (let i = 0; i < numCoins; i++) {
-          coins.push({
-            x: platform.x + 20 + i * 40,
-            y: platform.y - 40,
-            collected: false,
-            animFrame: 0
-          });
-        }
-      }
-    }
+    // Generate random coins across the level (less frequently than before)
+    const numRandomCoins = Math.floor(Math.random() * 8) + 5; // 5-12 coins randomly
 
-    // Add some coin trails in the air (but reachable)
-    for (let x = 400; x < levelWidth - 300; x += 200) {
-      for (let i = 0; i < 5; i++) {
+    for (let i = 0; i < numRandomCoins; i++) {
+      const x = Math.random() * (levelWidth - 200) + 100;
+      const y = Math.random() * 250 + 50; // Between y=50 and y=300
+
+      // Don't spawn coins too close to each other
+      const tooClose = coins.some(coin => {
+        const dx = coin.x - x;
+        const dy = coin.y - y;
+        return Math.sqrt(dx * dx + dy * dy) < 100;
+      });
+
+      if (!tooClose) {
         coins.push({
-          x: x + i * 30,
-          y: 250,
+          x: x,
+          y: y,
           collected: false,
           animFrame: 0
         });
@@ -538,11 +539,24 @@ class MarioGameCard extends HTMLElement {
     // Platform collision
     player.onGround = false;
     for (const platform of this.gameState.platforms) {
+      if (platform.broken) continue; // Skip broken platforms
+
       if (this.checkCollision(player, platform)) {
+        // Landing on top of platform
         if (player.velocityY > 0 && player.y + player.height - player.velocityY <= platform.y) {
           player.y = platform.y - player.height;
           player.velocityY = 0;
           player.onGround = true;
+        }
+        // Hitting head on bottom of platform
+        else if (player.velocityY < 0 && player.y - player.velocityY >= platform.y + platform.height) {
+          if (platform.breakable) {
+            // Break the platform
+            platform.broken = true;
+            this.createBreakParticles(platform);
+            this.gameState.score += 25;
+          }
+          player.velocityY = 0;
         }
       }
     }
@@ -781,6 +795,27 @@ class MarioGameCard extends HTMLElement {
            rect1.y + rect1.height > rect2.y;
   }
 
+  createBreakParticles(platform) {
+    const numParticles = 20;
+    const centerX = platform.x + platform.width / 2;
+    const centerY = platform.y + platform.height / 2;
+
+    for (let i = 0; i < numParticles; i++) {
+      const angle = (Math.PI * 2 * i) / numParticles;
+      const speed = Math.random() * 3 + 2;
+
+      this.gameState.particles.push({
+        x: centerX,
+        y: centerY,
+        vx: Math.cos(angle) * speed,
+        vy: Math.sin(angle) * speed - Math.random() * 2,
+        size: Math.random() * 3 + 2,
+        color: Math.random() > 0.5 ? '#8B4513' : '#228B22',
+        life: 60
+      });
+    }
+  }
+
   draw() {
     const camera = this.gameState.camera;
 
@@ -799,9 +834,11 @@ class MarioGameCard extends HTMLElement {
     this.ctx.save();
     this.ctx.translate(-camera.x, 0);
 
-    // Draw platforms
+    // Draw platforms (skip broken ones)
     for (const platform of this.gameState.platforms) {
-      this.drawPlatform(platform);
+      if (!platform.broken) {
+        this.drawPlatform(platform);
+      }
     }
 
     // Draw flag
