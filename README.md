@@ -1,89 +1,91 @@
-# 🎮 Mario Game pro Home Assistant
+# 🎮 Mario Game for Home Assistant
 
-Klasická Mario hra vytvořená pomocí teček/bodů jako custom karta pro Home Assistant.
+> 🇨🇿 **[Česká verze / Czech version](README.cs.md)**
 
-## ✨ Funkce
+A classic Mario platformer game created with dots/pixels as a custom card for Home Assistant.
 
-- 🏃 Mario postavička vytvořená z barevných teček
-- 🎯 Platformy a překážky
-- 👾 Nepřátelé (Goomba)
-- 🪙 Sbíratelné mince
-- 🏆 Systém skóre a více levelů
-- ⌨️ Ovládání klávesnicí: **K/L** pro pohyb, **MEZERNÍK/W** pro skok
-- 🎨 Vizuály z malých bodů/teček
-- 🍄 Power-upy (houby, květiny)
-- 🔊 Zvukové efekty
-- 👾 Více typů nepřátel (Goomba, Koopa, Piranha Plant)
-- 📱 Mobilní ovládání (dotykové)
+## ✨ Features
 
-## 📦 Instalace
+- 🏃 Mario character made from colored dots
+- 🎯 Platforms and obstacles
+- 👾 Enemies (Goomba, Koopa Troopa, Piranha Plant)
+- 🪙 Collectible coins
+- 🏆 Score system with multiple levels
+- ⌨️ Keyboard controls: **K/L** for movement, **SPACEBAR/W** for jump
+- 🎨 Pixel art visuals made from small dots
+- 🍄 Power-ups (mushrooms, fire flowers)
+- 🔊 Sound effects
+- 📱 Mobile controls (touch)
+- 🏁 Flag at the end of each level
 
-### Metoda 1: HACS (Doporučeno) 🌟
+## 📦 Installation
+
+### Method 1: HACS (Recommended) 🌟
 
 [![Open your Home Assistant instance and open a repository inside the Home Assistant Community Store.](https://my.home-assistant.io/badges/hacs_repository.svg)](https://my.home-assistant.io/redirect/hacs_repository/?owner=joshuaaaaa&repository=mario&category=plugin)
 
-#### Krok za krokem:
+#### Step by Step:
 
-1. **Ujistěte se, že máte nainstalovaný [HACS](https://hacs.xyz/)**
+1. **Make sure you have [HACS](https://hacs.xyz/) installed**
 
-2. **Přidejte custom repository:**
-   - Otevřete HACS v Home Assistant
-   - Klikněte na **Frontend** (ne Integrations!)
-   - Klikněte na **⋮** (tři tečky) v pravém horním rohu
-   - Vyberte **Custom repositories**
-   - Přidejte:
+2. **Add custom repository:**
+   - Open HACS in Home Assistant
+   - Click on **Frontend** (not Integrations!)
+   - Click on **⋮** (three dots) in the top right corner
+   - Select **Custom repositories**
+   - Add:
      - **Repository**: `https://github.com/joshuaaaaa/mario`
      - **Category**: `Lovelace`
-   - Klikněte **ADD**
+   - Click **ADD**
 
-3. **Stáhněte plugin:**
-   - V HACS Frontend vyhledejte **"Mario Game Card"**
-   - Klikněte na plugin
-   - Klikněte **DOWNLOAD**
-   - Klikněte **DOWNLOAD** znovu pro potvrzení
+3. **Download the plugin:**
+   - In HACS Frontend, search for **"Mario Game Card"**
+   - Click on the plugin
+   - Click **DOWNLOAD**
+   - Click **DOWNLOAD** again to confirm
 
-4. **Vyčistěte cache prohlížeče:**
-   - Stiskněte **Ctrl+Shift+R** (nebo Cmd+Shift+R na Mac)
+4. **Clear browser cache:**
+   - Press **Ctrl+Shift+R** (or Cmd+Shift+R on Mac)
 
-5. **Přidejte kartu na dashboard:**
-   - Dashboard → Upravit → + Přidat kartu
-   - Scrollujte dolů do sekce **Custom**
-   - Najděte **Mario Game Card**
-   - NEBO přidejte manuálně: `type: custom:mario-game-card`
+5. **Add card to dashboard:**
+   - Dashboard → Edit → + Add Card
+   - Scroll down to the **Custom** section
+   - Find **Mario Game Card**
+   - OR add manually: `type: custom:mario-game-card`
 
-### Metoda 2: Manuální instalace
+### Method 2: Manual Installation
 
-#### 1. Stáhněte soubor
+#### 1. Download the file
 
-Stáhněte `mario-game-card.js` z [latest release](https://github.com/joshuaaaaa/mario/releases/latest)
+Download `mario-game-card.js` from [latest release](https://github.com/joshuaaaaa/mario/releases/latest)
 
-#### 2. Zkopírujte do www adresáře
+#### 2. Copy to www directory
 
-Zkopírujte soubor do adresáře `config/www/`:
+Copy the file to the `config/www/` directory:
 
 ```
-<VAŠ_CONFIG_ADRESÁŘ>/
+<YOUR_CONFIG_DIR>/
 └── www/
     └── mario-game-card.js
 ```
 
-**Příklad kopírování (Linux/Mac):**
+**Example copy (Linux/Mac):**
 ```bash
-# Nahraďte /config/ vaší cestou
+# Replace /config/ with your path
 scp mario-game-card.js root@homeassistant:/config/www/
 ```
 
-**Přes File Editor addon:**
-1. Nainstalujte "File Editor" addon v Home Assistant
-2. Zkopírujte soubor do `www/mario-game-card.js`
+**Via File Editor addon:**
+1. Install "File Editor" addon in Home Assistant
+2. Copy the file to `www/mario-game-card.js`
 
-**Přes Samba/SMB (Windows):**
-1. Připojte se k `\\homeassistant\config\`
-2. Zkopírujte soubor do složky `www\`
+**Via Samba/SMB (Windows):**
+1. Connect to `\\homeassistant\config\`
+2. Copy the file to the `www\` folder
 
-#### 3. Přidejte resource do configuration.yaml
+#### 3. Add resource to configuration.yaml
 
-Editujte `configuration.yaml` a přidejte:
+Edit `configuration.yaml` and add:
 
 ```yaml
 lovelace:
@@ -92,106 +94,106 @@ lovelace:
       type: module
 ```
 
-#### 4. Restartujte Home Assistant
+#### 4. Restart Home Assistant
 
-**Nastavení** → **System** → **Restart**
+**Settings** → **System** → **Restart**
 
-#### 5. Přidejte kartu na dashboard
+#### 5. Add card to dashboard
 
-Nyní můžete přidat kartu:
+Now you can add the card:
 ```yaml
 type: custom:mario-game-card
 ```
 
-## 🎮 Ovládání
+## 🎮 Controls
 
 **PC:**
-- **K** - Pohyb doleva
-- **L** - Pohyb doprava
-- **MEZERNÍK** nebo **W** - Skok
-- **X** nebo **SHIFT** - Střelba (s flower power-upem)
+- **K** - Move left
+- **L** - Move right
+- **SPACEBAR** or **W** - Jump
+- **X** or **SHIFT** - Shoot (with flower power-up)
 
-**Mobil:**
-- Použijte dotykové tlačítka pod hrou
-- Nebo swipněte nahoru na canvasu pro skok
+**Mobile:**
+- Use touch buttons below the game
+- Or swipe up on canvas to jump
 
-## 🎯 Herní mechaniky
+## 🎯 Game Mechanics
 
-- **Horizontální scrolling** - Mario běží doprava jako v klasické hře
-- Kamera sleduje Maria plynule
-- Skákejte na platformy a vyhýbejte se nepřátelům
-- **Zlepšené ovládání ve vzduchu** - lepší kontrola při skákání
-- Sbírejte mince pro body (50 bodů za minci) - umístěné na dosažitelných místech
-- Skákejte na nepřátele pro jejich eliminaci (100 bodů) nebo je sestřelte
-- Sesbírejte power-upy:
-  - 🍄 **Houba** - zvětší Mária a dá extra hit point (200 bodů)
-  - 🌺 **Květina** - umožní střílet ohnivé koule (300 bodů)
-- **Dosáhněte vlajky na konci levelu** pro dokončení! 🏁
-- 3 životy - nespadněte ze spodní části obrazovky!
-- Level bonus: 500 bodů za každý život + 50 bodů za sbíranou minci
+- **Horizontal scrolling** - Mario runs to the right like in the classic game
+- Camera follows Mario smoothly
+- Jump on platforms and avoid enemies
+- **Improved air control** - better control when jumping
+- Collect coins for points (50 points per coin) - placed in reachable locations
+- Jump on enemies to eliminate them (100 points) or shoot them
+- Collect power-ups:
+  - 🍄 **Mushroom** - makes Mario bigger and gives extra hit point (200 points)
+  - 🌺 **Fire Flower** - allows shooting fireballs (300 points)
+- **Reach the flag at the end of the level** to complete it! 🏁
+- 3 lives - don't fall off the bottom of the screen!
+- Level bonus: 500 points per life + 50 points per collected coin
 
-## 🛠️ Technické detaily
+## 🛠️ Technical Details
 
-Hra je vytvořena pomocí:
-- **HTML5 Canvas** pro vykreslení
-- **Tečková grafika** - všechny objekty jsou vykresleny pomocí malých barevných teček
-- **JavaScript** pro herní logiku
+The game is built using:
+- **HTML5 Canvas** for rendering
+- **Dot graphics** - all objects are rendered using small colored dots
+- **JavaScript** for game logic
 - **Home Assistant Custom Card API**
 
-## 📝 Struktura projektu
+## 📝 Project Structure
 
 ```
 mario/
 ├── custom_components/
 │   └── mario_game/
-│       ├── __init__.py           # Inicializace komponenty
-│       ├── manifest.json         # Metadata komponenty
-│       ├── const.py              # Konstanty
-│       └── mario-game-card.js   # Lovelace karta s herní logikou
-└── README.md                     # Tento soubor
+│       ├── __init__.py           # Component initialization
+│       ├── manifest.json         # Component metadata
+│       ├── const.py              # Constants
+│       └── mario-game-card.js   # Lovelace card with game logic
+└── README.md                     # This file
 ```
 
-## 🎨 Vzhled
+## 🎨 Visual Style
 
-Veškerá grafika je vytvořena z malých teček (pixelů):
-- Mario: Červený a béžový
-- Platformy: Hnědé s zelenou trávou
-- Nepřátelé: Hnědí s očima
-- Mince: Zlaté kruhové
-- Mraky: Bílé průhledné
+All graphics are created from small dots (pixels):
+- Mario: Red and beige
+- Platforms: Brown with green grass
+- Enemies: Brown with eyes
+- Coins: Golden circles
+- Clouds: White transparent
 
-## ✅ Nové funkce (v1.2)
+## ✅ New Features (v1.2)
 
-- ✅ **Horizontální scrollování** - Mario běží doprava jako v klasické hře!
-- ✅ **Plynulá kamera** - sleduje Maria s parallax efektem mraku
-- ✅ **Zlepšené ovládání** - lepší kontrola ve vzduchu při skákání
-- ✅ **Vlajka na konci levelu** - dosáhněte vlajky pro dokončení (ne sbírání mincí)
-- ✅ **Delší levely** (3200px šířka) - můžete běžet doprava
-- ✅ Mince umístěné na dosažitelných místech (nad platformami)
-- ✅ Více levelů s postupnou obtížností
-- ✅ Power-upy (houby pro zvětšení, květiny pro střelbu)
-- ✅ Zvukové efekty (skok, mince, power-up, stomp, atd.)
-- ✅ 3 typy nepřátel (Goomba, Koopa Troopa, Piranha Plant)
-- ✅ Animace (mince, nepřátelé, částice)
-- ✅ Mobilní ovládání (dotykové tlačítka + swipe)
-- ✅ Systém životů a invincibility po zásahu
+- ✅ **Horizontal scrolling** - Mario runs to the right like in the classic game!
+- ✅ **Smooth camera** - follows Mario with parallax cloud effect
+- ✅ **Improved controls** - better air control when jumping
+- ✅ **Flag at the end of level** - reach the flag to complete (not collecting coins)
+- ✅ **Longer levels** (3200px width) - you can run to the right
+- ✅ Coins placed in reachable locations (above platforms)
+- ✅ Multiple levels with progressive difficulty
+- ✅ Power-ups (mushrooms for growth, flowers for shooting)
+- ✅ Sound effects (jump, coin, power-up, stomp, etc.)
+- ✅ 3 enemy types (Goomba, Koopa Troopa, Piranha Plant)
+- ✅ Animations (coins, enemies, particles)
+- ✅ Mobile controls (touch buttons + swipe)
+- ✅ Life system and invincibility after hit
 
-## 🚀 Budoucí vylepšení
+## 🚀 Future Improvements
 
-- [ ] Více typů power-upů (hvězda, 1-UP houba)
-- [ ] Skryté bloky a power-up boxy
-- [ ] Boss fights na konci levelů
-- [ ] Hudba na pozadí
-- [ ] High score tabulka
+- [ ] More power-up types (star, 1-UP mushroom)
+- [ ] Hidden blocks and power-up boxes
+- [ ] Boss fights at the end of levels
+- [ ] Background music
+- [ ] High score leaderboard
 
-## 📄 Licence
+## 📄 License
 
-Tento projekt je open-source a volně použitelný.
+This project is open-source and free to use.
 
-## 🤝 Přispívání
+## 🤝 Contributing
 
-Pull requesty jsou vítány! Pro větší změny prosím nejprve otevřete issue pro diskusi.
+Pull requests are welcome! For major changes, please open an issue first to discuss.
 
 ---
 
-Vytvořeno s ❤️ pro Home Assistant komunitu
+Created with ❤️ for the Home Assistant community
