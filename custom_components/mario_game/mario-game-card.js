@@ -4,6 +4,7 @@ class MarioGameCard extends HTMLElement {
   constructor() {
     super();
     this.attachShadow({ mode: 'open' });
+    this._initialized = false;
     this.gameState = {
       player: { x: 50, y: 300, width: 20, height: 20, velocityY: 0, velocityX: 0, onGround: false },
       keys: { left: false, right: false, jump: false },
@@ -20,40 +21,44 @@ class MarioGameCard extends HTMLElement {
   }
 
   setConfig(config) {
-    // Accept any config, including empty object
-    this.config = config || {};
-    // Only render if we have a shadow root
-    if (this.shadowRoot) {
-      this.render();
+    // Validate config - throw error if completely invalid
+    if (config === null) {
+      throw new Error('Invalid configuration');
     }
+    // Accept empty object as valid config
+    this.config = config || {};
   }
 
   static getStubConfig() {
     return {};
   }
 
-  static getConfigElement() {
-    // Return undefined to indicate no visual editor
-    return undefined;
-  }
+  // NOTE: Do NOT define getConfigElement() if there's no editor!
+  // Returning undefined causes "startsWith" errors in Home Assistant
 
   getCardSize() {
     return 6;
   }
 
   set hass(hass) {
-    // Store hass object when Home Assistant provides it
     this._hass = hass;
+    // Render when hass is set, but only if we haven't rendered yet
+    if (!this._initialized && this.config) {
+      this.render();
+      this._initialized = true;
+    }
   }
 
   connectedCallback() {
-    // Render when element is connected to DOM, if we have config
-    if (this.config && this.shadowRoot) {
+    // Initial render when connected and config is set
+    if (this.config && !this._initialized) {
       this.render();
+      this._initialized = true;
     }
   }
 
   render() {
+    if (!this.shadowRoot) return;
     this.shadowRoot.innerHTML = `
       <style>
         ha-card {
