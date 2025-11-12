@@ -49,12 +49,15 @@ Klasická Mario hra vytvořená pomocí teček jako custom karta pro Home Assist
 
 ## 🎯 Herní mechaniky
 
-- Sbírejte mince (50 bodů) a power-upy (200-300 bodů)
+- **Běžte doprava** - horizontální scrollující level s kamerou
+- Zlepšené ovládání ve vzduchu
+- Sbírejte mince (50 bodů) a power-upy (200-300 bodů) - na dosažitelných místech
 - Porazte nepřátele skokem (100 bodů) nebo střelbou
 - 🍄 Houba = větší Mario + extra hit
 - 🌺 Květina = schopnost střílet ohnivé koule
-- 3 životy, dokončete level sesbíráním všech mincí a poražením nepřátel
-- Bonus 500 bodů za život při dokončení levelu
+- **Dosáhněte vlajky 🏁 na konci levelu** pro dokončení!
+- 3 životy
+- Bonus: 500 bodů za život + 50 bodů za minci
 
 ---
 

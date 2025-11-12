@@ -8,18 +8,21 @@ class MarioGameCard extends HTMLElement {
       player: {
         x: 50, y: 300, width: 20, height: 20,
         velocityY: 0, velocityX: 0, onGround: false,
-        powered: false, // Mushroom power-up
-        canShoot: false, // Flower power-up
-        invincible: 0, // Invincibility frames
-        animFrame: 0 // Animation frame
+        powered: false,
+        canShoot: false,
+        invincible: 0,
+        animFrame: 0
       },
       keys: { left: false, right: false, jump: false, shoot: false },
+      camera: { x: 0 },
       platforms: [],
       enemies: [],
       coins: [],
       powerUps: [],
       projectiles: [],
       particles: [],
+      flag: null,
+      levelWidth: 3200,
       score: 0,
       lives: 3,
       gameOver: false,
@@ -38,7 +41,6 @@ class MarioGameCard extends HTMLElement {
   }
 
   initSounds() {
-    // Simple sound effects using Web Audio API
     const audioContext = typeof AudioContext !== 'undefined' ? new AudioContext() : null;
 
     const createSound = (frequency, duration, type = 'sine') => {
@@ -269,7 +271,6 @@ class MarioGameCard extends HTMLElement {
     touchShoot.addEventListener('touchstart', (e) => { e.preventDefault(); this.gameState.keys.shoot = true; });
     touchShoot.addEventListener('touchend', (e) => { e.preventDefault(); this.gameState.keys.shoot = false; });
 
-    // Canvas swipe controls
     this.canvas.addEventListener('touchstart', (e) => {
       this.touchStartX = e.touches[0].clientX;
       this.touchStartY = e.touches[0].clientY;
@@ -302,10 +303,13 @@ class MarioGameCard extends HTMLElement {
       animFrame: 0
     };
     this.gameState.keys = { left: false, right: false, jump: false, shoot: false };
+    this.gameState.camera = { x: 0 };
+    this.gameState.levelWidth = 3200;
     this.gameState.platforms = this.generateLevel(this.gameState.level);
     this.gameState.enemies = this.generateEnemies(this.gameState.level);
     this.gameState.coins = this.generateCoins(this.gameState.level);
     this.gameState.powerUps = this.generatePowerUps(this.gameState.level);
+    this.gameState.flag = { x: this.gameState.levelWidth - 100, y: 280, height: 100 };
     this.gameState.projectiles = [];
     this.gameState.particles = [];
     this.gameState.gameOver = false;
@@ -318,48 +322,44 @@ class MarioGameCard extends HTMLElement {
   }
 
   generateLevel(level) {
-    const platforms = [
-      { x: 0, y: 380, width: 800, height: 20 }
-    ];
+    const platforms = [];
+    const levelWidth = 3200;
 
-    if (level === 1) {
-      platforms.push(
-        { x: 200, y: 350, width: 150, height: 15 },
-        { x: 400, y: 250, width: 120, height: 15 },
-        { x: 550, y: 150, width: 100, height: 15 },
-        { x: 680, y: 250, width: 120, height: 15 },
-        { x: 700, y: 80, width: 100, height: 15 }
-      );
-    } else if (level === 2) {
-      platforms.push(
-        { x: 100, y: 340, width: 120, height: 15 },
-        { x: 250, y: 280, width: 100, height: 15 },
-        { x: 400, y: 220, width: 100, height: 15 },
-        { x: 550, y: 160, width: 100, height: 15 },
-        { x: 680, y: 100, width: 120, height: 15 },
-        { x: 150, y: 180, width: 80, height: 15 }
-      );
-    } else if (level === 3) {
-      platforms.push(
-        { x: 150, y: 320, width: 80, height: 15 },
-        { x: 300, y: 260, width: 80, height: 15 },
-        { x: 450, y: 200, width: 80, height: 15 },
-        { x: 600, y: 140, width: 80, height: 15 },
-        { x: 730, y: 80, width: 70, height: 15 },
-        { x: 50, y: 240, width: 70, height: 15 },
-        { x: 380, y: 100, width: 60, height: 15 }
-      );
-    } else {
-      // Generate harder levels
-      const numPlatforms = 5 + level;
-      for (let i = 0; i < numPlatforms; i++) {
+    // Ground
+    platforms.push({ x: 0, y: 380, width: levelWidth, height: 20 });
+
+    // Generate platforms going right
+    for (let x = 200; x < levelWidth - 200; x += 180) {
+      const height = 340 - Math.random() * 100;
+      const width = 80 + Math.random() * 70;
+
+      // Add platform
+      platforms.push({
+        x: x,
+        y: height,
+        width: width,
+        height: 15
+      });
+
+      // Sometimes add a higher platform nearby
+      if (Math.random() > 0.5 && x < levelWidth - 400) {
         platforms.push({
-          x: 50 + (i * 120) % 700,
-          y: 300 - (i * 50) % 250,
-          width: 80 + Math.random() * 60,
+          x: x + 150,
+          y: height - 80,
+          width: 60,
           height: 15
         });
       }
+    }
+
+    // Add some gaps platforms for jumping
+    for (let x = 800; x < levelWidth - 300; x += 400) {
+      platforms.push({
+        x: x,
+        y: 280,
+        width: 100,
+        height: 15
+      });
     }
 
     return platforms;
@@ -368,20 +368,21 @@ class MarioGameCard extends HTMLElement {
   generateEnemies(level) {
     const enemies = [];
     const types = ['goomba', 'koopa', 'piranha'];
-    const count = 2 + level;
+    const levelWidth = this.gameState.levelWidth;
 
-    for (let i = 0; i < count; i++) {
-      const type = types[Math.min(level - 1, 2)];
+    // Spread enemies across the level
+    for (let x = 300; x < levelWidth - 200; x += 250) {
+      const type = types[Math.floor(Math.random() * Math.min(level, 3))];
       enemies.push({
-        x: 200 + i * 180,
+        x: x + Math.random() * 100,
         y: type === 'piranha' ? 320 : 340,
         width: 16,
         height: type === 'piranha' ? 24 : 16,
-        velocityX: 1 + level * 0.2,
-        direction: 1,
+        velocityX: 0.8 + level * 0.1,
+        direction: Math.random() > 0.5 ? 1 : -1,
         type: type,
         animFrame: 0,
-        pipeY: 360 // For piranha plants
+        pipeY: 360
       });
     }
 
@@ -390,15 +391,35 @@ class MarioGameCard extends HTMLElement {
 
   generateCoins(level) {
     const coins = [];
-    const count = 5 + level * 2;
+    const levelWidth = this.gameState.levelWidth;
+    const platforms = this.gameState.platforms;
 
-    for (let i = 0; i < count; i++) {
-      coins.push({
-        x: 100 + (i * 100) % 700,
-        y: 50 + (i * 80) % 300,
-        collected: false,
-        animFrame: 0
-      });
+    // Place coins on or near platforms
+    for (const platform of platforms) {
+      if (platform.y < 350 && platform.width > 50) {
+        // Coins above the platform
+        const numCoins = Math.floor(platform.width / 40);
+        for (let i = 0; i < numCoins; i++) {
+          coins.push({
+            x: platform.x + 20 + i * 40,
+            y: platform.y - 40,
+            collected: false,
+            animFrame: 0
+          });
+        }
+      }
+    }
+
+    // Add some coin trails in the air (but reachable)
+    for (let x = 400; x < levelWidth - 300; x += 200) {
+      for (let i = 0; i < 5; i++) {
+        coins.push({
+          x: x + i * 30,
+          y: 250,
+          collected: false,
+          animFrame: 0
+        });
+      }
     }
 
     return coins;
@@ -406,20 +427,21 @@ class MarioGameCard extends HTMLElement {
 
   generatePowerUps(level) {
     const powerUps = [];
+    const levelWidth = this.gameState.levelWidth;
 
+    // Mushroom early in the level
+    powerUps.push({
+      x: 500,
+      y: 330,
+      type: 'mushroom',
+      collected: false
+    });
+
+    // Flower in the middle
     if (level >= 1) {
       powerUps.push({
-        x: 400,
-        y: 200,
-        type: 'mushroom',
-        collected: false
-      });
-    }
-
-    if (level >= 2) {
-      powerUps.push({
-        x: 600,
-        y: 100,
+        x: levelWidth / 2,
+        y: 250,
         type: 'flower',
         collected: false
       });
@@ -432,23 +454,19 @@ class MarioGameCard extends HTMLElement {
     document.addEventListener('keydown', (e) => {
       if (this.gameState.gameOver) return;
 
-      // Left movement: K only
       if (e.key === 'k' || e.key === 'K') {
         this.gameState.keys.left = true;
       }
 
-      // Right movement: L only
       if (e.key === 'l' || e.key === 'L') {
         this.gameState.keys.right = true;
       }
 
-      // Jump: Space, W
       if (e.key === ' ' || e.key === 'Spacebar' || e.key === 'w' || e.key === 'W') {
         e.preventDefault();
         this.gameState.keys.jump = true;
       }
 
-      // Shoot: X, Shift
       if (e.key === 'x' || e.key === 'X' || e.key === 'Shift') {
         this.gameState.keys.shoot = true;
       }
@@ -476,7 +494,8 @@ class MarioGameCard extends HTMLElement {
     this.gameState.animCounter++;
     const player = this.gameState.player;
     const gravity = 0.5;
-    const moveSpeed = 4;
+    const moveSpeed = 5;
+    const airMoveSpeed = 4; // Better air control
     const jumpStrength = 12;
 
     // Shooting
@@ -484,15 +503,18 @@ class MarioGameCard extends HTMLElement {
       this.shoot();
     }
 
-    // Horizontal movement
+    // Horizontal movement with better air control
     if (this.gameState.keys.left) {
-      player.velocityX = -moveSpeed;
+      const speed = player.onGround ? -moveSpeed : -airMoveSpeed;
+      player.velocityX = speed;
       player.animFrame = Math.floor(this.gameState.animCounter / 5) % 4;
     } else if (this.gameState.keys.right) {
-      player.velocityX = moveSpeed;
+      const speed = player.onGround ? moveSpeed : airMoveSpeed;
+      player.velocityX = speed;
       player.animFrame = Math.floor(this.gameState.animCounter / 5) % 4;
     } else {
-      player.velocityX *= 0.8;
+      // Friction (more on ground, less in air)
+      player.velocityX *= player.onGround ? 0.7 : 0.9;
       player.animFrame = 0;
     }
 
@@ -510,9 +532,8 @@ class MarioGameCard extends HTMLElement {
     player.x += player.velocityX;
     player.y += player.velocityY;
 
-    // Boundary checks
+    // Boundary checks (left side)
     if (player.x < 0) player.x = 0;
-    if (player.x + player.width > this.canvas.width) player.x = this.canvas.width - player.width;
 
     // Platform collision
     player.onGround = false;
@@ -531,6 +552,16 @@ class MarioGameCard extends HTMLElement {
       this.loseLife();
     }
 
+    // Camera follows player (smooth)
+    const targetCameraX = player.x - this.canvas.width / 3;
+    this.gameState.camera.x += (targetCameraX - this.gameState.camera.x) * 0.1;
+
+    // Camera bounds
+    if (this.gameState.camera.x < 0) this.gameState.camera.x = 0;
+    if (this.gameState.camera.x > this.gameState.levelWidth - this.canvas.width) {
+      this.gameState.camera.x = this.gameState.levelWidth - this.canvas.width;
+    }
+
     // Decrease invincibility
     if (player.invincible > 0) {
       player.invincible--;
@@ -539,27 +570,35 @@ class MarioGameCard extends HTMLElement {
     // Update enemies
     for (const enemy of this.gameState.enemies) {
       if (enemy.type === 'piranha') {
-        // Piranha plant up/down movement
         enemy.animFrame = (enemy.animFrame + 0.05) % (Math.PI * 2);
         enemy.y = enemy.pipeY - 20 + Math.sin(enemy.animFrame) * 15;
       } else {
         enemy.x += enemy.velocityX * enemy.direction;
         enemy.animFrame = Math.floor(this.gameState.animCounter / 10) % 2;
 
-        // Bounce off edges and platforms
-        if (enemy.x < 0 || enemy.x + enemy.width > this.canvas.width) {
+        // Bounce off platforms and edges
+        if (enemy.x < 0 || enemy.x + enemy.width > this.gameState.levelWidth) {
           enemy.direction *= -1;
+        }
+
+        // Check platform edges
+        for (const platform of this.gameState.platforms) {
+          if (enemy.y + enemy.height >= platform.y - 5 && enemy.y + enemy.height <= platform.y + 5) {
+            const atLeftEdge = enemy.x <= platform.x;
+            const atRightEdge = enemy.x + enemy.width >= platform.x + platform.width;
+            if (atLeftEdge || atRightEdge) {
+              enemy.direction *= -1;
+            }
+          }
         }
       }
 
       // Check collision with player
       if (this.checkCollision(player, enemy) && player.invincible === 0) {
         if (player.velocityY > 0 && player.y + player.height - player.velocityY <= enemy.y + 5) {
-          // Kill enemy
           this.killEnemy(enemy);
           player.velocityY = -8;
         } else {
-          // Player hit
           this.playerHit();
         }
       }
@@ -571,12 +610,11 @@ class MarioGameCard extends HTMLElement {
       proj.x += proj.velocityX;
       proj.life--;
 
-      if (proj.life <= 0 || proj.x < 0 || proj.x > this.canvas.width) {
+      if (proj.life <= 0 || proj.x < 0 || proj.x > this.gameState.levelWidth) {
         this.gameState.projectiles.splice(i, 1);
         continue;
       }
 
-      // Check collision with enemies
       for (const enemy of this.gameState.enemies) {
         if (this.checkCollision(proj, enemy)) {
           this.killEnemy(enemy);
@@ -631,12 +669,12 @@ class MarioGameCard extends HTMLElement {
       }
     }
 
-    // Check level completion (all coins collected or all enemies killed)
-    const allCoinsCollected = this.gameState.coins.every(c => c.collected);
-    const allEnemiesKilled = this.gameState.enemies.every(e => e.x < -100);
-
-    if (allCoinsCollected && allEnemiesKilled) {
-      this.completeLevel();
+    // Check flag collision (level completion)
+    const flag = this.gameState.flag;
+    if (player.x + player.width >= flag.x && player.x <= flag.x + 20) {
+      if (player.y + player.height >= flag.y && player.y <= flag.y + flag.height) {
+        this.completeLevel();
+      }
     }
 
     // Update UI
@@ -687,12 +725,12 @@ class MarioGameCard extends HTMLElement {
     if (this.gameState.lives <= 0) {
       this.endGame();
     } else {
-      // Reset player position
       this.gameState.player.x = 50;
       this.gameState.player.y = 100;
       this.gameState.player.velocityX = 0;
       this.gameState.player.velocityY = 0;
       this.gameState.player.invincible = 120;
+      this.gameState.camera.x = 0;
     }
   }
 
@@ -711,7 +749,7 @@ class MarioGameCard extends HTMLElement {
 
   completeLevel() {
     this.gameState.levelComplete = true;
-    const bonus = this.gameState.lives * 500;
+    const bonus = this.gameState.lives * 500 + this.gameState.coinsCollected * 50;
     this.gameState.score += bonus;
     this.levelBonusElement.textContent = bonus;
     this.levelCompleteScreen.style.display = 'block';
@@ -722,10 +760,12 @@ class MarioGameCard extends HTMLElement {
     this.gameState.level++;
     this.gameState.levelComplete = false;
     this.levelCompleteScreen.style.display = 'none';
+    this.gameState.camera = { x: 0 };
     this.gameState.platforms = this.generateLevel(this.gameState.level);
     this.gameState.enemies = this.generateEnemies(this.gameState.level);
     this.gameState.coins = this.generateCoins(this.gameState.level);
     this.gameState.powerUps = this.generatePowerUps(this.gameState.level);
+    this.gameState.flag = { x: this.gameState.levelWidth - 100, y: 280, height: 100 };
     this.gameState.projectiles = [];
     this.gameState.particles = [];
     this.gameState.player.x = 50;
@@ -742,19 +782,30 @@ class MarioGameCard extends HTMLElement {
   }
 
   draw() {
-    // Clear canvas with sky color
+    const camera = this.gameState.camera;
+
+    // Clear canvas
     this.ctx.fillStyle = '#87CEEB';
     this.ctx.fillRect(0, 0, this.canvas.width, this.canvas.height);
 
-    // Draw clouds
-    this.drawCloud(100, 50);
-    this.drawCloud(400, 80);
-    this.drawCloud(650, 40);
+    // Draw clouds (parallax effect)
+    this.drawCloud(100 - camera.x * 0.3, 50);
+    this.drawCloud(400 - camera.x * 0.3, 80);
+    this.drawCloud(700 - camera.x * 0.3, 40);
+    this.drawCloud(1000 - camera.x * 0.3, 60);
+    this.drawCloud(1400 - camera.x * 0.3, 90);
+
+    // Save context and apply camera offset
+    this.ctx.save();
+    this.ctx.translate(-camera.x, 0);
 
     // Draw platforms
     for (const platform of this.gameState.platforms) {
       this.drawPlatform(platform);
     }
+
+    // Draw flag
+    this.drawFlag(this.gameState.flag);
 
     // Draw power-ups
     for (const powerUp of this.gameState.powerUps) {
@@ -788,10 +839,13 @@ class MarioGameCard extends HTMLElement {
       this.ctx.fillRect(p.x, p.y, 3, 3);
     }
 
-    // Draw player (with invincibility flicker)
+    // Draw player
     if (this.gameState.player.invincible === 0 || this.gameState.animCounter % 4 < 2) {
       this.drawPlayer(this.gameState.player);
     }
+
+    // Restore context
+    this.ctx.restore();
   }
 
   drawCloud(x, y) {
@@ -825,6 +879,41 @@ class MarioGameCard extends HTMLElement {
       this.ctx.beginPath();
       this.ctx.arc(x + dotSize, platform.y + dotSize, dotSize, 0, Math.PI * 2);
       this.ctx.fill();
+    }
+  }
+
+  drawFlag(flag) {
+    const dotSize = 2;
+    const spacing = 3;
+
+    // Pole
+    this.ctx.fillStyle = '#654321';
+    for (let y = flag.y; y < flag.y + flag.height; y += spacing) {
+      this.ctx.beginPath();
+      this.ctx.arc(flag.x + 10, y, dotSize, 0, Math.PI * 2);
+      this.ctx.fill();
+    }
+
+    // Flag
+    this.ctx.fillStyle = '#FF0000';
+    for (let x = flag.x + 12; x < flag.x + 50; x += spacing) {
+      for (let y = flag.y; y < flag.y + 30; y += spacing) {
+        this.ctx.beginPath();
+        this.ctx.arc(x, y, dotSize, 0, Math.PI * 2);
+        this.ctx.fill();
+      }
+    }
+
+    // Checkered pattern
+    this.ctx.fillStyle = '#FFFFFF';
+    for (let x = flag.x + 12; x < flag.x + 50; x += spacing * 2) {
+      for (let y = flag.y; y < flag.y + 30; y += spacing * 2) {
+        if ((Math.floor((x - flag.x) / 6) + Math.floor((y - flag.y) / 6)) % 2 === 0) {
+          this.ctx.beginPath();
+          this.ctx.arc(x, y, dotSize, 0, Math.PI * 2);
+          this.ctx.fill();
+        }
+      }
     }
   }
 
@@ -877,7 +966,6 @@ class MarioGameCard extends HTMLElement {
     const spacing = 3;
 
     if (enemy.type === 'goomba') {
-      // Goomba - brown mushroom-like enemy
       this.ctx.fillStyle = '#8B4513';
       for (let x = enemy.x; x < enemy.x + enemy.width; x += spacing) {
         for (let y = enemy.y; y < enemy.y + enemy.height; y += spacing) {
@@ -887,7 +975,6 @@ class MarioGameCard extends HTMLElement {
         }
       }
 
-      // Eyes
       this.ctx.fillStyle = '#FFFFFF';
       this.ctx.beginPath();
       this.ctx.arc(enemy.x + 4, enemy.y + 6, 2, 0, Math.PI * 2);
@@ -904,7 +991,6 @@ class MarioGameCard extends HTMLElement {
       this.ctx.arc(enemy.x + 11, enemy.y + 6, 1, 0, Math.PI * 2);
       this.ctx.fill();
     } else if (enemy.type === 'koopa') {
-      // Koopa Troopa - turtle with shell
       this.ctx.fillStyle = '#228B22';
       for (let x = enemy.x; x < enemy.x + enemy.width; x += spacing) {
         for (let y = enemy.y + 4; y < enemy.y + enemy.height; y += spacing) {
@@ -914,7 +1000,6 @@ class MarioGameCard extends HTMLElement {
         }
       }
 
-      // Head
       this.ctx.fillStyle = '#FFFF00';
       for (let x = enemy.x + 4; x < enemy.x + 12; x += spacing) {
         for (let y = enemy.y; y < enemy.y + 8; y += spacing) {
@@ -924,8 +1009,6 @@ class MarioGameCard extends HTMLElement {
         }
       }
     } else if (enemy.type === 'piranha') {
-      // Piranha Plant - in a pipe
-      // Pipe
       this.ctx.fillStyle = '#228B22';
       for (let x = enemy.x - 4; x < enemy.x + enemy.width + 4; x += spacing) {
         for (let y = enemy.pipeY; y < 400; y += spacing) {
@@ -935,7 +1018,6 @@ class MarioGameCard extends HTMLElement {
         }
       }
 
-      // Plant head
       this.ctx.fillStyle = '#FF0000';
       for (let x = enemy.x; x < enemy.x + enemy.width; x += spacing) {
         for (let y = enemy.y; y < enemy.y + 12; y += spacing) {
@@ -945,7 +1027,6 @@ class MarioGameCard extends HTMLElement {
         }
       }
 
-      // Spots
       this.ctx.fillStyle = '#FFFFFF';
       this.ctx.beginPath();
       this.ctx.arc(enemy.x + 4, enemy.y + 4, 2, 0, Math.PI * 2);
@@ -983,7 +1064,6 @@ class MarioGameCard extends HTMLElement {
     const spacing = 3;
 
     if (powerUp.type === 'mushroom') {
-      // Red mushroom
       this.ctx.fillStyle = '#FF0000';
       for (let x = powerUp.x - 8; x < powerUp.x + 8; x += spacing) {
         for (let y = powerUp.y - 8; y < powerUp.y; y += spacing) {
@@ -993,7 +1073,6 @@ class MarioGameCard extends HTMLElement {
         }
       }
 
-      // Stem
       this.ctx.fillStyle = '#FFDBAC';
       for (let x = powerUp.x - 3; x < powerUp.x + 3; x += spacing) {
         for (let y = powerUp.y; y < powerUp.y + 8; y += spacing) {
@@ -1003,7 +1082,6 @@ class MarioGameCard extends HTMLElement {
         }
       }
 
-      // Dots on cap
       this.ctx.fillStyle = '#FFFFFF';
       this.ctx.beginPath();
       this.ctx.arc(powerUp.x - 4, powerUp.y - 4, 2, 0, Math.PI * 2);
@@ -1012,7 +1090,6 @@ class MarioGameCard extends HTMLElement {
       this.ctx.arc(powerUp.x + 4, powerUp.y - 4, 2, 0, Math.PI * 2);
       this.ctx.fill();
     } else if (powerUp.type === 'flower') {
-      // Fire flower
       const petals = 6;
       this.ctx.fillStyle = '#FFA500';
       for (let i = 0; i < petals; i++) {
@@ -1027,7 +1104,6 @@ class MarioGameCard extends HTMLElement {
         }
       }
 
-      // Center
       this.ctx.fillStyle = '#FFFF00';
       this.ctx.beginPath();
       this.ctx.arc(powerUp.x, powerUp.y, 4, 0, Math.PI * 2);
@@ -1041,7 +1117,6 @@ class MarioGameCard extends HTMLElement {
     this.ctx.arc(proj.x, proj.y, 4, 0, Math.PI * 2);
     this.ctx.fill();
 
-    // Trail effect
     this.ctx.fillStyle = 'rgba(255, 165, 0, 0.5)';
     this.ctx.beginPath();
     this.ctx.arc(proj.x - 4, proj.y, 3, 0, Math.PI * 2);
@@ -1082,6 +1157,6 @@ window.customCards = window.customCards || [];
 window.customCards.push({
   type: 'mario-game-card',
   name: 'Mario Game Card',
-  description: 'Vylepšená Mario hra s více levely, power-upy, zvuky a mobilním ovládáním'
+  description: 'Klasická Mario hra s horizontálním scrollováním, power-upy, zvuky a mobilním ovládáním'
 });
 console.info('%c🎮 MARIO-GAME-CARD %cRegistered in window.customCards', 'color: red; font-weight: bold', 'color: green');
