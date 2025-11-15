@@ -76,6 +76,7 @@ class MarioGameCard extends HTMLElement {
 
   setConfig(config) {
     this.config = config || {};
+    this.lightEntity = config.light_entity || null;
     if (this.shadowRoot) {
       this.render();
     }
@@ -95,6 +96,20 @@ class MarioGameCard extends HTMLElement {
 
   set hass(hass) {
     this._hass = hass;
+  }
+
+  flashLight() {
+    if (!this._hass || !this.lightEntity) {
+      return;
+    }
+
+    // Flash the light - turn on and then off
+    this._hass.callService('light', 'turn_on', {
+      entity_id: this.lightEntity,
+      flash: 'short'
+    }).catch(err => {
+      console.warn('Failed to flash light:', err);
+    });
   }
 
   connectedCallback() {
@@ -804,6 +819,7 @@ class MarioGameCard extends HTMLElement {
           this.gameState.coinsCollected++;
           this.sounds.coin();
           this.createParticles(coin.x, coin.y, '#FFD700', 5);
+          this.flashLight();
         }
       }
     }

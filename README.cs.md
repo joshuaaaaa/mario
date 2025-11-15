@@ -17,6 +17,7 @@ Klasická Mario hra vytvořená pomocí teček/bodů jako custom karta pro Home 
 - 🔊 Zvukové efekty
 - 👾 Více typů nepřátel (Goomba, Koopa, Piranha Plant)
 - 📱 Mobilní ovládání (dotykové)
+- 💡 **Integrace se světlem** - připojte si světla z Home Assistant, která probliknou při sebrání mince!
 
 ## 📦 Instalace
 
@@ -104,6 +105,17 @@ Nyní můžete přidat kartu:
 ```yaml
 type: custom:mario-game-card
 ```
+
+**Volitelně: Integrace se světlem** 💡
+
+Můžete připojit světelnou entitu z Home Assistant, která problikne při sebrání mince:
+
+```yaml
+type: custom:mario-game-card
+light_entity: light.vase_svetlo
+```
+
+Nahraďte `light.vase_svetlo` vaším skutečným ID světelné entity z Home Assistant.
 
 ## 🎮 Ovládání
 

@@ -19,6 +19,7 @@ A classic Mario platformer game created with dots/pixels as a custom card for Ho
 - 🔊 Sound effects
 - 📱 Mobile controls (touch)
 - 🏁 Flag at the end of each level
+- 💡 **Light integration** - connect your Home Assistant lights to flash when collecting coins!
 
 ## 📦 Installation
 
@@ -100,6 +101,17 @@ Now you can add the card:
 ```yaml
 type: custom:mario-game-card
 ```
+
+**Optional: Light Integration** 💡
+
+You can connect a Home Assistant light entity that will flash when you collect a coin:
+
+```yaml
+type: custom:mario-game-card
+light_entity: light.your_light_name
+```
+
+Replace `light.your_light_name` with your actual light entity ID from Home Assistant.
 
 ## 🎮 Controls
 
