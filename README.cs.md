@@ -8,16 +8,17 @@ Klasická Mario hra vytvořená pomocí teček/bodů jako custom karta pro Home 
 
 - 🏃 Mario postavička vytvořená z barevných teček
 - 🎯 Platformy a překážky
-- 👾 Nepřátelé (Goomba)
+- 👾 Nepřátelé (Goomba, Koopa Troopa, Piranha Plant)
 - 🪙 Sbíratelné mince
 - 🏆 Systém skóre a více levelů
 - ⌨️ Ovládání klávesnicí: **K/L** pro pohyb, **MEZERNÍK/W** pro skok
 - 🎨 Vizuály z malých bodů/teček
 - 🍄 Power-upy (houby, květiny)
 - 🔊 Zvukové efekty
-- 👾 Více typů nepřátel (Goomba, Koopa, Piranha Plant)
 - 📱 Mobilní ovládání (dotykové)
+- 🏁 Vlajka na konci každého levelu
 - 💡 **Integrace se světlem** - připojte si světla z Home Assistant, která probliknou při sebrání mince!
+- 🌍 **Podpora více jazyků** - automaticky se zobrazuje v angličtině nebo češtině podle jazykového nastavení vašeho Home Assistant
 
 ## 📦 Instalace
 

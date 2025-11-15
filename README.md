@@ -20,6 +20,7 @@ A classic Mario platformer game created with dots/pixels as a custom card for Ho
 - 📱 Mobile controls (touch)
 - 🏁 Flag at the end of each level
 - 💡 **Light integration** - connect your Home Assistant lights to flash when collecting coins!
+- 🌍 **Multi-language support** - automatically displays in English or Czech based on your Home Assistant language settings
 
 ## 📦 Installation
 

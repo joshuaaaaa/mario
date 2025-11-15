@@ -4,6 +4,37 @@ class MarioGameCard extends HTMLElement {
   constructor() {
     super();
     this.attachShadow({ mode: 'open' });
+    this.currentLanguage = 'cs'; // Default to Czech, will be updated from HA
+    this.translations = {
+      en: {
+        score: 'Score',
+        lives: 'Lives',
+        level: 'Level',
+        coins: 'Coins',
+        gameOver: 'GAME OVER',
+        restart: 'Restart',
+        levelComplete: 'LEVEL COMPLETE!',
+        bonus: 'Bonus',
+        points: 'points',
+        nextLevel: 'Next Level',
+        pcControls: 'PC: J = left | L = right | SPACEBAR/W = jump | K = down (enter tunnel) | X/SHIFT = shoot',
+        mobileControls: 'Mobile: Use buttons below'
+      },
+      cs: {
+        score: 'Skóre',
+        lives: 'Životy',
+        level: 'Level',
+        coins: 'Mince',
+        gameOver: 'KONEC HRY',
+        restart: 'Restart',
+        levelComplete: 'ÚROVEŇ DOKONČENA!',
+        bonus: 'Bonus',
+        points: 'bodů',
+        nextLevel: 'Další Level',
+        pcControls: 'PC: J = doleva | L = doprava | MEZERNÍK/W = skok | K = dolů (vstup do tunelu) | X/SHIFT = střelba',
+        mobileControls: 'Mobil: Použijte tlačítka níže'
+      }
+    };
     this.gameState = {
       player: {
         x: 50, y: 300, width: 20, height: 20,
@@ -38,6 +69,10 @@ class MarioGameCard extends HTMLElement {
     this.sounds = this.initSounds();
     this.touchStartX = 0;
     this.touchStartY = 0;
+  }
+
+  t(key) {
+    return this.translations[this.currentLanguage]?.[key] || this.translations['cs'][key] || key;
   }
 
   initSounds() {
@@ -96,6 +131,51 @@ class MarioGameCard extends HTMLElement {
 
   set hass(hass) {
     this._hass = hass;
+
+    // Detect language from Home Assistant settings
+    const newLanguage = hass.language || 'cs';
+    const languageCode = newLanguage.startsWith('en') ? 'en' : (newLanguage.startsWith('cs') ? 'cs' : 'cs');
+
+    // If language changed, re-render the UI
+    if (this.currentLanguage !== languageCode) {
+      this.currentLanguage = languageCode;
+      if (this.shadowRoot && this.shadowRoot.querySelector('.controls')) {
+        this.updateUILanguage();
+      }
+    }
+  }
+
+  updateUILanguage() {
+    // Update all text labels with translations
+    const elements = {
+      scoreLabel: 'score',
+      livesLabel: 'lives',
+      levelLabel: 'level',
+      coinsLabel: 'coins',
+      gameOverTitle: 'gameOver',
+      finalScoreLabel: 'score',
+      finalLevelLabel: 'level',
+      restartLabel: 'restart',
+      levelCompleteTitle: 'levelComplete',
+      bonusLabel: 'bonus',
+      pointsLabel: 'points',
+      nextLevelLabel: 'nextLevel',
+      pcControls: 'pcControls',
+      mobileControls: 'mobileControls'
+    };
+
+    for (const [elementId, key] of Object.entries(elements)) {
+      const element = this.shadowRoot?.getElementById(elementId);
+      if (element) {
+        if (elementId === 'gameOverTitle') {
+          element.textContent = `💀 ${this.t(key)} 💀`;
+        } else if (elementId === 'levelCompleteTitle') {
+          element.textContent = `🎉 ${this.t(key)} 🎉`;
+        } else {
+          element.textContent = this.t(key);
+        }
+      }
+    }
   }
 
   flashLight() {
@@ -214,28 +294,28 @@ class MarioGameCard extends HTMLElement {
       <ha-card>
         <div class="game-container">
           <div class="game-info">
-            <div>🏆 Skóre: <span id="score">0</span></div>
-            <div>❤️ Životy: <span id="lives">3</span></div>
-            <div>📍 Level: <span id="level">1</span></div>
-            <div>🪙 Mince: <span id="coinsCollected">0</span></div>
+            <div>🏆 <span id="scoreLabel">${this.t('score')}</span>: <span id="score">0</span></div>
+            <div>❤️ <span id="livesLabel">${this.t('lives')}</span>: <span id="lives">3</span></div>
+            <div>📍 <span id="levelLabel">${this.t('level')}</span>: <span id="level">1</span></div>
+            <div>🪙 <span id="coinsLabel">${this.t('coins')}</span>: <span id="coinsCollected">0</span></div>
           </div>
           <div style="position: relative;">
             <canvas id="gameCanvas" width="800" height="400"></canvas>
             <div id="gameOverScreen" style="display: none;" class="game-over">
-              <div>💀 GAME OVER 💀</div>
-              <div style="font-size: 16px; margin-top: 10px;">Skóre: <span id="finalScore">0</span></div>
-              <div style="font-size: 14px; margin-top: 5px;">Level: <span id="finalLevel">1</span></div>
-              <button class="restart-btn" id="restartBtn">🔄 Restart</button>
+              <div id="gameOverTitle">💀 ${this.t('gameOver')} 💀</div>
+              <div style="font-size: 16px; margin-top: 10px;"><span id="finalScoreLabel">${this.t('score')}</span>: <span id="finalScore">0</span></div>
+              <div style="font-size: 14px; margin-top: 5px;"><span id="finalLevelLabel">${this.t('level')}</span>: <span id="finalLevel">1</span></div>
+              <button class="restart-btn" id="restartBtn">🔄 <span id="restartLabel">${this.t('restart')}</span></button>
             </div>
             <div id="levelCompleteScreen" style="display: none;" class="level-complete">
-              <div>🎉 LEVEL COMPLETE! 🎉</div>
-              <div style="font-size: 16px; margin-top: 10px;">Bonus: <span id="levelBonus">0</span> bodů</div>
-              <button class="next-level-btn" id="nextLevelBtn">➡️ Další Level</button>
+              <div id="levelCompleteTitle">🎉 ${this.t('levelComplete')} 🎉</div>
+              <div style="font-size: 16px; margin-top: 10px;"><span id="bonusLabel">${this.t('bonus')}</span>: <span id="levelBonus">0</span> <span id="pointsLabel">${this.t('points')}</span></div>
+              <button class="next-level-btn" id="nextLevelBtn">➡️ <span id="nextLevelLabel">${this.t('nextLevel')}</span></button>
             </div>
           </div>
           <div class="controls">
-            ⌨️ PC: J = doleva | L = doprava | MEZERNÍK/W = skok | K = dolů (vstup do tunelu) | X/SHIFT = střelba<br>
-            📱 Mobil: Použijte tlačítka níže
+            ⌨️ <span id="pcControls">${this.t('pcControls')}</span><br>
+            📱 <span id="mobileControls">${this.t('mobileControls')}</span>
           </div>
           <div class="touch-controls">
             <button class="touch-btn" id="touchLeft">◀️</button>
